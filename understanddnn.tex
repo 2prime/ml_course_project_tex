@@ -132,7 +132,7 @@ residual layers and train a shallower network instead. In this section, we exten
     $\ell(\cdot;\cdot)$ takes two scalars as input. We assume $\ell(p;y)=(p-y)^2$.
 \end{defn}
 
-\begin{defn}[loss of two-layer Resnet]
+\begin{defn}[loss of two-layer ResNet]
 	We assume $f_1$ is a function without any parameter. Let $f_{2,\theta}$ denote a twice differentiable function $f_2$ with parameter $\theta$, then the loss of a two-layer resnet can be written as:
     \[L_2(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta;\mathbf{x},y):=\ell\left(\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})));y\right)\]
 	When fixing $\theta$, we define
@@ -162,11 +162,13 @@ residual layers and train a shallower network instead. In this section, we exten
     \mathbf{0};
     \frac{\mathbf{w}\left(\mathbf{w}^{*}\right)^\mathrm{T}}{\norm{\mathbf{w}}^2}\mathbf{V}_2\right)\]
 	then for any $\mathbf{x},y$,
-    \[\iprod{\text{vec}(\mathbf{G})}
+    \begin{equation}\label{lemma1}
+    \iprod{\text{vec}(\mathbf{G})}
     {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}
     +\delta
     \geq F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)
-    -F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y),\]
+    -F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y),
+    \end{equation}
     where
     \[\delta=c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
     \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}.\]
@@ -220,37 +222,43 @@ residual layers and train a shallower network instead. In this section, we exten
 \end{proof}
 
 \begin{prop}
-	Suppose $\eta\in(0,1)$. At any point $(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta)$ such that $\mathbf{w}\neq\mathbf{0}$, $\norm{\mathbf{V}_2}_2\leq 1-\eta$ and $\norm{\nabla f_{2,\theta}}_\infty\leq 1$, and for any $\mathbf{w}^*$,$\mathbf{V}_1^*$,
-	\[\mathbb{E}_{\mathbf{x},y}\norm{\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}\geq\frac{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)-F_1(\mathbf{w}^*,\mathbf{V}_1^*)}{\sqrt{2\norm{\mathbf{w}}^2+\norm{\mathbf{w}^*}^2\left(2+\dis\frac{1}{\norm{\mathbf{w}}^2}\left(\norm{\mathbf{V}_2}_2^2+\frac{\norm{\mathbf{V}_1-\mathbf{V}_1^*}_2^2}{\eta^2}\right)\right)}}\]
-	The term $\norm{\mathbf{V}_2}_2^2$ can be replaced by $(1-\eta)^2$.
+Let $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ be a critical point of the two-layer ResNet. 
+Assume $\mathbf{w}\neq\mathbf{0}$ and
+for any $\mathbf{x}$, $\norm{f_1(\mathbf{x})}_\infty<\frac c 2$. Then for any $\mathbf{w}^*,\mathbf{V}_1^*$, 
+\[
+\sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)}\leq
+c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1 
+    +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{w},y)}.
+\]
 \end{prop}
 
 \begin{proof}
-	Using Cauchy-Schwarz inequality and Lemma 1, we have
-	\begin{align}
-	\norm{\mathbf{G}(\mathbf{x})}_F\norm{\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}\geq L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
-	\label{ineq1}
-	\end{align}
-	When $\norm{\mathbf{V}_2}_2\leq 1-\eta$,
-	\[\norm{\mathbf{u}(\mathbf{x})}\geq \norm{\mathbf{w}}\left(1-\norm{\mathbf{V}_2}_2\right)\geq\eta\norm{\mathbf{w}}\]
-	Thus for any $\mathbf{x}$,
-	\begin{align*}
-	\norm{\mathbf{G}(\mathbf{x})}_F^2&\leq\norm{\mathbf{w}-\mathbf{w}^*}^2+\frac{\norm{\mathbf{w^*}}^2\norm{\mathbf{V}_2}_2^2}{\norm{\mathbf{w}}^2}+\frac{\norm{\mathbf{w^*}}^2\norm{\mathbf{V}_1-\mathbf{V}_1^*}_2^2}{\norm{\mathbf{u}(\mathbf{x})}^2}\\
-	&\leq2\norm{\mathbf{w}}^2+2\norm{\mathbf{w}^*}^2+\frac{\norm{\mathbf{w}^*}^2\norm{\mathbf{V}_2}_2^2}{\norm{\mathbf{w}}^2}+\frac{\norm{\mathbf{w^*}}^2\norm{\mathbf{V}_1-\mathbf{V}_1^*}_2^2}{\eta^2\norm{\mathbf{w}}^2}
-	\end{align*}
-	Then we combine the inequality above and Eq.(\ref{ineq1}):
-	\begin{align*}
-	&\sqrt{2\norm{\mathbf{w}}^2+\norm{\mathbf{w}^*}^2\left(2+\frac{1}{\norm{\mathbf{w}}^2}\left(\norm{\mathbf{V}_2}_2^2+\frac{\norm{\mathbf{V}_1-\mathbf{V}_1^*}_2^2}{\eta^2}\right)\right)}\norm{\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}\\
-	&\geq L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
-	\end{align*}
-	Taking expectation over $\mathbf{x}$ and $y$ on both sides yields the result.
-\end{proof}
+Since $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ is the critical point, 
+$\nabla F_{2,\theta}(\mathbf{w}^*,\mathbf{V}_1^*,\mathbf{V}_2^*;\mathbf{x},y)=\mathbf{0}$.
 
-\begin{rem}
-	We want to prove a theorem similar to Theorem 1 in \cite{2018arXiv180406739S}, but end up with this proposition. It is weaker since
-	\[\mathbb{E}_{\mathbf{x},y}\norm{\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}\geq\norm{\mathbb{E}_{\mathbf{x},y}\left[\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right]}=\norm{\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)}\]
-	but we do not know how to improve it.
-\end{rem}
+Plugging into (\ref{lemma1}), we have 
+\[
+    F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)
+    -c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
+    \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}-F_1\left(\mathbf{w}^*,\mathbf{V}_1^*;
+    \mathbf{x},y\right)\leq 0.
+\]
+Simple calculation shows 
+\[
+    \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)}\leq
+    \frac{
+    c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
+    +\sqrt{4F_1\left(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y\right)+
+    c^2\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1^2}
+    }{2}.
+\]
+For $\sqrt{A+B}\leq\sqrt{A}+\sqrt{B}$, we have
+\[
+    \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)}\leq
+c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1 
+    +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{w},y)}.
+\]
+\end{proof}
 
 \section{Better target function leads to better loss surface}
 
