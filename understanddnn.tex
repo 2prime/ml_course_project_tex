@@ -262,7 +262,7 @@ c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\rig
 
 
 \subsection{A counterexample}
-In this section, we give a simple example that shows the critical point of two-layer network does not have to be better 
+In this section, we give a simple example that shows the critical point of two-layer network does not have to be better
 than one-layer network's global minimum. So in a sense, our result cannot be improved.
 
 \begin{table}[H]
@@ -334,8 +334,8 @@ In this subsection, we also use the squared $\ell_2$ loss as the loss function b
 \end{tabular}
 \end{minipage}
 \\
-\caption{Counterexample: The network structure is simple two-layer feedforward neural network with activation function "polished ReLU" which is based on ReLU but smooth in $0$'s neighborhood and has derivative $0$ at $0$. Specifically, the network works as: 
-    $f_w(\mathbf x)=\mathbf W_2\sigma(\mathbf W_1 \mathbf x)$. 
+\caption{Counterexample: The network structure is simple two-layer feedforward neural network with activation function "polished ReLU" which is based on ReLU but smooth in $0$'s neighborhood and has derivative $0$ at $0$. Specifically, the network works as:
+    $f_w(\mathbf x)=\mathbf W_2\sigma(\mathbf W_1 \mathbf x)$.
     Then for data $(\mathbf x,y)$ whose label is randomly drawn, the weights $\mathbf W_1, \mathbf W_2$ reach a point that satisfies the first order condition, yet it is not a global minimum (when $\mathbf W_1'=(-2,1,1), \mathbf W_2'=1$, the loss is less than the example) . Meanwhile $\mathbf W_1, \mathbf W_2$ is not a critical point for data $(\mathbf x,y')$ whose label obviously depends on $\mathbf x$ (indeed coincide with the first coordinate of $\mathbf x$) which means the optimization will not stuck at the $\mathbf W_1, \mathbf W_2$ above for dependent data.}
 \end{table}
 
@@ -359,6 +359,7 @@ The success of convolution operator in neural networks is attributed to "the fea
 \end{figure}
 
 
+\begin{comment}
 \section{Loss surface for one data}
 
 In the next section, we discuss the sufficiency of the cooperation of the data to give a guarantee for a good loss landscape. In this section, we consider the landscape when there is only one data.
@@ -383,8 +384,52 @@ Can we give some assumption that leads to for some $i$
 $$
 \frac{\partial f}{\partial \mathbf W_i} \ge c|(\mathbf W_n\sigma (\mathbf W_{n-1}\sigma(\mathbf W_{n-2}\cdots\sigma(\mathbf W_1\mathbf x)))-y|
 $$
+\end{comment}
 
-\subsection{Deep Residual Networks}
+\section{Loss surface for one data}
+
+In the next section, we will discuss the effect of the cooperation of the data to guarantee a good loss landscape. In this section, we consider the landscape when there is only one data.
+
+\subsection{Theoretical results}
+
+We still assume that the loss function is squared $\ell_2$ loss, and the data is $(\mathbf{x},\mathbf{y})$. Note that the label $\mathbf{y}$ can also be a vector. Without loss of generality, we assume that the neural network ends with a fully-connected layer, so the objective function can be written as:
+$$
+F(\mathbf{W},\theta)=\norm{\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y}}_2^2
+$$
+where $\mathbf{W}$ is the weight matrix of the final FC layer, and $\theta$ represents the parameters of previous layers.
+
+\begin{lem}
+The following inequality holds:
+$$
+\norm{\nabla F(\mathbf{W},\theta)}_F\geq 2\norm{f_{\theta}(\mathbf{x})}_2\norm{\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y}}_2
+$$
+
+\begin{proof}
+We simply take gradient with respect to $\mathbf{W}$:
+$$
+\nabla_{\mathbf{W}}F(\mathbf{W},\theta)=2(\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y})\left(f_{\theta}(\mathbf{x})\right)^{\mathrm{T}}
+$$
+Computing Frobenius norm on both sides yields the following equation:
+$$
+\norm{\nabla_{\mathbf{W}}F(\mathbf{W},\theta)}_F=2\norm{(\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y})\left(f_{\theta}(\mathbf{x})\right)^{\mathrm{T}}}_F=2\norm{\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y}}_2\norm{f_{\theta}(\mathbf{x})}_2
+$$
+The inequality in the lemma then follows since $\norm{\nabla F(\mathbf{W},\theta)}_F\geq\norm{\nabla_{\mathbf{W}}F(\mathbf{W},\theta)}_F$.
+\end{proof}
+\end{lem}
+
+\begin{thm}
+Assume $\theta\in\{\phi:f_{\phi}(\mathbf{x})\neq\mathbf{0}\}$, then every critical point $(\mathbf{W},\theta)$ of $F$ is a global minima.
+
+\begin{proof}
+Setting $\nabla F(\mathbf{W},\theta)=\mathbf{0}$ and using $f_{\theta}(\mathbf{x})\neq\mathbf{0}$ yields:
+$$
+\norm{\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y}}_2=0
+$$
+and thus $F(\mathbf{W},\theta)=0$.
+\end{proof}
+\end{thm}
+
+\subsection{A control view of deep residual networks}
 
 Based on the observation that deep residual network $x_{k+1}=x_{k}+f(x_k)$ can be considered as the forward Euler scheme for an ODE, recent works begin to utilize the ODE to model the deep networks. The learning process can be understand as solving a control problem. There are a lot of work focusing on finding sufficient conditions for the optimal control. In this section, we briefly introduce some of the results and hope to bring some insight into understanding the loss surface of the neural networks. All the theorem in this section can be found in \cite{bressan2007introduction}.
 
