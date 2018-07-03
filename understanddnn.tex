@@ -296,16 +296,31 @@ $$
 
 \subsection{Deep Residual Networks}
 
-Based on the observation that deep residual network $x_{k+1}=x_{k}+f(x_k)$ can be considered as the forward Euler scheme for an ODE, recent works begin to utilize the ODE to model the deep networks. The learning process can be understood as solving a control problem. There are a lot of work focusing on finding sufficient conditions for the optimal control. In this section, we briefly introduce some of the results and hope to bring some insight for understanding the loss surface of the neural networks.
+Base on the observation that deep residual network $x_{k+1}=x_{k}+f(x_k)$ can be considered as the forward Euler scheme for an ODE, recent works begin to utilize the ODE to model the deep networks. The learning process can be understand as solving a control problem. There are a lot of work focusing on finding sufficient conditions for the optimal control. In this section, we briefly introduce some of the results and hope to bring some insight for understanding the loss surface of the neural networks. All the theorem in this section can be found in \cite{bressan2007introduction}.
 
-\textbf{Reachable Set}
+First we would like to introduce the first order principle, \emph{i.e.} $\nabla f=0$, for the control problem.
+\begin{prop}
+	\textbf{(Pontryagin Maximum Principle)} Consider the optimization problem $$\min_{u\in\mathbf{U}} \phi(x(T,u))$$ for the control problem described by
+	$$\dot x = f(x,t,u),x(0)=\hat{x},u(t)\in\mathbf{U},t\in [0,T]$$
+	
+	Let $u^*$ be a bounded admissible control, whose corresponding trajectory $x^*(\cdot)$ is optimal for the optimization problem. Then there exists a nontrivial, absolutely continuous vector function $p(\cdot)$ which satisfies
+	$$\dot{p}(t)=-p(t)\cdot D_xf(t,x^*(t),u^*(t))$$
+	$$p(t)\cdot f(t,x^*(t),u^*(t))=\max_{u\in\mathbf{U}}\left\{p(t)\cdot f(t,x^*(t),\omega)\right\}$$
+	at almost every time $t\in[0,T]$, together with the terminal conditions
+	$$p(T)=\lambda_0\nabla\phi_i(x^*(T))$$
+	for some constants $\lambda_0$.
+\end{prop}
 
-\textbf{PMP}
+Previous works have try to find sufficient conditions for optimal control and there are results claims that if the terminal cost function $\phi$ is convex and Pontryagin Maximum Principle holds, the control is an optimal control.
 
-\textbf{Value Function}
 
-This means for a given weight of the last layer, the loss surface seems good. The first order condition(PMP) can imply an optimal control. 
+\begin{prop}
+	In addition if the functional $u\rightarrow \phi_0(x(T,u))$ from $\mathbf{U}$ into $\mathbb{R}$ is convex. Then for any trajectory satisfies the tryagin's equation is optimal. 
+\end{prop}
 
+This means for a given weight of the last layer, the loss surface seems good. The first order condition(PMP) can imply an optimal control, which is also been proved in \cite{bartlett2018representing} in discrete sense.
+
+There is another another type of conditions is utilizing the definition of value function $$V(s,y)=\inf_{u\in\mathbf{U_{s,y}}}\psi(T,x(T,u,s,y))$$ where $\mathbf{U_{s,y}}$ denotes all the trajectory satisfies $x(s)=y$. The value function satisfies the Hamilton-Jacobi equation $$\partial_sV(s,y)+\inf_{\omega\in\mathbf{U}}\left\{\nabla_yV(s,y)\cdot f(s,y,\omega)\right\}=0$$
 \subsection{Experiments}
 
 \section{Further Directions}
@@ -327,7 +342,7 @@ We also test different algorithms (Momentum SGD, ADAM and AdaDelta) to escape th
 	\label{optsadd}
 \end{figure}
 
-\subsection{Fast Optimization Algorithm Based On The Control Perspective}
+\subsection{Fast (Decoupled) Optimization Algorithm Based On The Control Perspective}
 
 There are works showing that we can learn a neural network even if we fixed the last layer's weights. The learning problem turns to a standard control problem. This is natural to apply a \textbf{reinforcement learning} algorithm here. In the previous section, we have introduced that the \textbf{value function} provides a sufficient condition for the control problem. It's natural to use a \textbf{Q-learning} algorithm here to decouple the gradient computation during the back propagation, for the Bellman equation only depends on the previous state the following state.
 
