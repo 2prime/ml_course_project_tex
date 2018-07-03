@@ -129,12 +129,8 @@ Residual Networks \cite{he2016deep,he2016identity}, which introduced a identity 
 residual layers and train a shallower network instead. In this section, we extend the result in \cite{2018arXiv180406739S} which shows that for a two layer neural network, there is also a similar statement holds, \emph{i.e.}, a learned two layer residual network is better than a one layer network. To describe the result formally, we first introduce some notation and definitions. 
 
 \begin{defn}[loss function]
-	$\ell(\cdot;\cdot)$ takes two scalars as input.
+    $\ell(\cdot;\cdot)$ takes two scalars as input. We assume $\ell(p;y)=(p-y)^2$.
 \end{defn}
-
-\begin{flushleft}
-	We assume $\ell(p;y)$ is twice differentiable and is convex in $p$.
-\end{flushleft}
 
 \begin{defn}[loss of two-layer Resnet]
 	We assume $f_1$ is a function without any parameter. Let $f_{2,\theta}$ denote a twice differentiable function $f_2$ with parameter $\theta$, then the loss of a two-layer resnet can be written as:
@@ -157,36 +153,70 @@ residual layers and train a shallower network instead. In this section, we exten
 \end{flushleft}
 
 \begin{lem}
-	Fix some $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ where $\mathbf{w}\neq\mathbf{0}$, $\norm{\mathbf{V}_2}_2<1$ and $\norm{\nabla f_{2,\theta}}_\infty\leq 1$. For any $\mathbf{w}^*$,$\mathbf{V}_1^*$, define the vector
-	\[\mathbf{u}(\mathbf{x})=\mathbf{w}+\left(\mathbf{V}_2^T\mathbf{w}\right)\circ(\nabla f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))\]
-	and the matrix
-	\[\mathbf{G}(\mathbf{x})=\left(\mathbf{w}-\mathbf{w}^*;\frac{\mathbf{u}(\mathbf{x})\left(\mathbf{w}^{*}\right)^T}{\norm{\mathbf{u}(\mathbf{x})}^2}(\mathbf{V}_1-\mathbf{V}_1^*);\frac{\mathbf{w}\left(\mathbf{w}^{*}\right)^T}{\norm{\mathbf{w}}^2}\mathbf{V}_2\right)\]
+	Fix some $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$, 
+    where $\mathbf{w}\neq\mathbf{0}$.
+    Assume for any $\mathbf{x}$, $\norm{f_1(\mathbf{x})}_\infty<\frac c 2$.
+    For any $\mathbf{w}^*$,$\mathbf{V}_1^*$, define the matrix
+    \[\mathbf{G}=
+    \left(\mathbf{w}-\mathbf{w}^*;
+    \mathbf{0};
+    \frac{\mathbf{w}\left(\mathbf{w}^{*}\right)^T}{\norm{\mathbf{w}}^2}\mathbf{V}_2\right)\]
 	then for any $\mathbf{x},y$,
-	\[\iprod{\text{vec}(\mathbf{G}(\mathbf{x}))}{\text{vec}\left(\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}\geq L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)\]
+    \[\iprod{\text{vec}(\mathbf{G})}
+    {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}
+    +\delta
+    \geq F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)
+    -F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y),\]
+    where
+    \[\delta=c\norm{\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
+    \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}.\]
 \end{lem}
 
 \begin{proof}
-	We define $d\ell(\mathbf{x},y)=\dis\frac{\partial}{\partial p}\ell(p;y)\bigg|_{p=\mathbf{w}^T(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))}$ in order to simplify notation. Since $\norm{\nabla f_{2,\theta}}_\infty\leq 1$, 
-	\begin{align*}
-	\norm{\mathbf{u}(\mathbf{x})}&\geq\norm{\mathbf{w}}-\norm{\left(\mathbf{V}_2^T\mathbf{w}\right)\circ(\nabla f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))}\\
-	&\geq\norm{\mathbf{w}}-\norm{\mathbf{V}_2^T\mathbf{w}}\\
-	&\geq\norm{\mathbf{w}}\left(1-\norm{\mathbf{V}_2}_2\right)\\
-	&>0
-	\end{align*}
-	and $\mathbf{u}(\mathbf{x})\neq\mathbf{0}$ follows, so $\mathbf{G}(\mathbf{x})$ will not be undefined.
+	We define $d\ell(\mathbf{x},y)=\dis\frac{\partial}{\partial p}\ell(p;y)
+    \bigg|_{p=\mathbf{w}^T(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))}$ in order to simplify notation.
+
 	It can be easily verified that
 	\begin{align*}
 	\frac{\partial}{\partial\mathbf{w}}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)&=d\ell(\mathbf{x},y)(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))\\
-	\frac{\partial}{\partial\mathbf{V}_1}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)&=d\ell(\mathbf{x},y)\mathbf{u}(\mathbf{x})f_1(\mathbf{x})^T\\
 	\frac{\partial}{\partial\mathbf{V}_2}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)&=d\ell(\mathbf{x},y)\mathbf{w}f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x}))^T
 	\end{align*}
-	Using the definition of $\mathbf{G}(\mathbf{x})$, we can do the following calculation:
+	Using the definition of $\mathbf{G}$, we can do the following calculation:
 	\begin{align*}
-	&\iprod{\text{vec}(\mathbf{G}(\mathbf{x}))}{\text{vec}\left(\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}\\
+	&\iprod{\text{vec}(\mathbf{G})}{\text{vec}\left(\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}\\
 	=&d\ell(\mathbf{x},y)\left(\mathbf{w}^T(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))-\left(\mathbf{w}^*\right)^T(\mathbf{x}+\mathbf{V}_1^*f_1(\mathbf{x}))\right)\\
+        &\quad +d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)\\
 	\geq &L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
+        +d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)\\
+	\geq &L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
+        -\abs{d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)}\\
+	\geq &L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
+        -\frac c 2\abs{d\ell(\mathbf{x},y)}\norm{\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\\
 	\end{align*}
-	The last inequality uses the convexity of $\ell(\cdot;\cdot)$ in its first argument.
+	The first inequality uses the convexity of $\ell(\cdot;\cdot)$ in its first argument.
+
+    Since $\ell(p;y)=(p-y)^2$, we have $d\ell(p;y)=2(p-y)$. And take expectation over $\mathbf{x}$ and $y$ on both sides yields
+    \begin{align*}
+    &\iprod{\text{vec}(\mathbf{G})}
+        {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}\\
+    \geq & F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)
+    -F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
+    -c\norm{\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\gamma,
+    \end{align*}
+    where 
+    \[
+        \gamma=\mathbb{E}_{\mathbf{x},y}
+        \abs{\mathbf{w}^T\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
+        +\mathbf{V}_2f_{2,\theta}\left(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})\right)\big)-y}.
+    \]
+    Using Jensen inequality, we have
+    \begin{align*}
+        \gamma & \leq \sqrt{\mathbb{E}_{\mathbf{x},y}
+        \Big(\mathbf{w}^T\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
+        +\mathbf{V}_2f_{2,\theta}\left(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})\right)\big)-y\Big)^2}\\
+        & = \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}.
+    \end{align*}
+    Thus the claim.
 \end{proof}
 
 \begin{prop}
@@ -241,7 +271,7 @@ Figure \ref{saas} shows that the loss of dataset labeled with ground truth drops
 
 Inspired by the magic number $\log 10$, in this section we give a counter example that there exists a weight, under which condition the random guess is a first order condition but not a global minimum.
 
-In this section, we use the $\ell_2$ loss as the loss function between the target label and the network output. That is to say our objective function is designed as $\argmin_w\mathbb{E}_{(x,y)\sim Dataset}\left\|f_w(x)-y\right\|_2^2$. If the dataset is generated via two independent random variable $x,y$ and $P(y=1)=P(y=-1)=1/2$, then $f_w(x)=0$ for all $x$ is a point that satisfies the first order condition.
+In this section, we use the $\ell_2$ loss as the loss function between the target label and the network output. That is to say our objective function is designed as $\argmin_w\mathbb{E}_{(x,y)\sim \textit{Dataset}}\left\|f_w(x)-y\right\|_2^2$. If the dataset is generated via two independent random variable $x,y$ and $P(y=1)=P(y=-1)=1/2$, then $f_w(x)=0$ for all $x$ is a point that satisfies the first order condition.
 
 
 \textbf{it seem that this construction is independent of the network structure. It only needs there exist a weight to let the network output is all 0.}
