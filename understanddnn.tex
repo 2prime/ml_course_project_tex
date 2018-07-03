@@ -119,14 +119,14 @@ Peking University
 \begin{abstract}
 Deep neural networks have become the state-of-the-art
 models in numerous machine learning
-tasks. However, there is less theory to give the guarantee for both the optimization process and the generalization properties. In this technical report, we focus mainly on the optimization perspective, \emph{i.e.}, the guarantee for the computational complexity of the optimization algorithm for deep neural networks. First we consider an important factor \emph{depth} in deep learning. Due to the non-convexity of the optimization problem, deeper doesn't lead to better predictor even only evaluating on training data, although deeper networks have stronger approximation ability. But our work shows that deep ResNet can reaches lower training loss than a shallow one. Next we will show that the right label, \emph{i.e.}, the regularity of the objective function to approximate, matters when we consider the properties of the loss surface. 
+tasks. However, there is less theory to give the guarantee for both the optimization process and the generalization properties. In this technical report, we focus mainly on the optimization perspective, \emph{i.e.}, the guarantee for the computational complexity of the optimization algorithm for deep neural networks. First we consider an important factor \emph{depth} in deep learning. Due to the non-convexity of the optimization problem, deeper doesn't lead to better predictor even only evaluating on training data, although deeper networks have stronger approximation ability. But our work shows that deep ResNet can reaches lower training loss than a shallow one. Next we will show that the right label, \emph{i.e.}, the regularity of the objective function to approximate, matters when we consider the properties of the loss surface.
 
 \end{abstract}
 
 \section{The deeper the lower training loss}
 
 Residual Networks \cite{he2016deep,he2016identity}, which introduced a identity mapping based shortcut, is a class of deep neural networks and provide state-of-the-art performance both in image classification\cite{he2016deep,he2016identity}, image reconstruction\cite{he2016deep}, deep reinforcement learning\cite{silver2017mastering} and etc. ResNets allow the training of each layer only needs to focus on fitting just the residual of the previous layer’s output and the target output. \cite{2018arXiv180406739S} proves that for all deep residual, networks' local minimum is smaller than a linear predictor's global minimum. It shows that the trained network is no worse than what we can obtain if we remove the
-residual layers and train a shallower network instead. In this section, we extend the result in \cite{2018arXiv180406739S} which shows that for a two layer neural network, there is also a similar statement holds, \emph{i.e.}, a learned two layer residual network is better than a one layer network. To describe the result formally, we first introduce some notation and definitions. 
+residual layers and train a shallower network instead. In this section, we extend the result in \cite{2018arXiv180406739S} which shows that for a two layer neural network, there is also a similar statement holds, \emph{i.e.}, a learned two layer residual network is better than a one layer network. To describe the result formally, we first introduce some notation and definitions.
 
 \begin{defn}[loss function]
     $\ell(\cdot;\cdot)$ takes two scalars as input. We assume $\ell(p;y)=(p-y)^2$.
@@ -153,7 +153,7 @@ residual layers and train a shallower network instead. In this section, we exten
 \end{flushleft}
 
 \begin{lem}
-	Fix some $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$, 
+	Fix some $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$,
     where $\mathbf{w}\neq\mathbf{0}$.
     Assume for any $\mathbf{x}$, $\norm{f_1(\mathbf{x})}_\infty<\frac c 2$.
     For any $\mathbf{w}^*$,$\mathbf{V}_1^*$, define the matrix
@@ -203,7 +203,7 @@ residual layers and train a shallower network instead. In this section, we exten
     -F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
     -c\norm{\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\gamma,
     \end{align*}
-    where 
+    where
     \[
         \gamma=\mathbb{E}_{\mathbf{x},y}
         \abs{\mathbf{w}^T\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
@@ -269,16 +269,44 @@ Figure \ref{saas} shows that the loss of dataset labeled with ground truth drops
 
 \subsection{A Counter Example}
 
-Inspired by the magic number $\log 10$, in this section we give a counter example that there exists a weight, under which condition the random guess is a first order condition but not a global minimum.
+Inspired by the magic number $\log 10$, in this section we give a counter example that there exists a weight, which is a first order condition but not a global minimum for random guess label.
 
-In this section, we use the $\ell_2$ loss as the loss function between the target label and the network output. That is to say our objective function is designed as $\argmin_w\mathbb{E}_{(x,y)\sim \textit{Dataset}}\left\|f_w(x)-y\right\|_2^2$. If the dataset is generated via two independent random variable $x,y$ and $P(y=1)=P(y=-1)=1/2$, then $f_w(x)=0$ for all $x$ is a point that satisfies the first order condition.
+In this section, we use the $\ell_2$ loss as the loss function between the target label and the network output. That is to say our objective function is designed as $\argmin_w\mathbb{E}_{(x,y)\sim Dataset}\left\|f_w(x)-y\right\|_2^2$. %If the dataset is generated via two independent random variable $x,y$ and $P(y=1)=P(y=-1)=1/2$, then $f_w(x)=0$ for all $x$ is a point that satisfies the first order condition.
 
+\begin{table}[H]
+\begin{minipage}[t]{0.4\linewidth}
+\flushright
+\begin{tabular}{|c|c|c|}
+\hline $x^\mathrm{T}$&$y$&$y'$\\
+\hline $(0,0,0)$&0&0\\
+\hline $(0,0,1)$&1&0\\
+\hline $(0,1,0)$&1&0\\
+\hline $(0,1,1)$&1&0\\
+\hline $(1,0,0)$&0&1\\
+\hline $(1,0,1)$&0&1\\
+\hline $(1,1,0)$&1&1\\
+\hline $(1,1,1)$&0&1\\
+\hline
+\end{tabular}
+\end{minipage}
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\begin{tabular}{|c|c|}
+\hline $W_1$&$W_2$\\
+\hline (-2,1,0)&1\\
+\hline
+\end{tabular}
+\end{minipage}
+\\
+\caption{Counter example: The network structure is simple two layer feedforward neural network with activation function "polished ReLU" which is based on ReLU but smooth at 0's neighbor and has derivative 0 at 0. Specifically, the network works as: $f_w(x)=W_2\sigma(W_1 x)$. Then for data $(x,y)$ whose label is randomly drawn, the weights $W_1, W_2$ reach a point that satisfies the first order condition, yet it is not a global minimum (when $W_1'=(-2,1,1), W_2'=1$, the loss is less than the example) . Meanwhile $W_1, W_2$ is not a critical point for data $(x,y')$ whose label obviously depends on $x$ (indeed coincide with the first coordinate of $x$) which means the optimization will not stuck at the $W_1, W_2$ above for dependent data.}
+\end{table}
 
-\textbf{it seem that this construction is independent of the network structure. It only needs there exist a weight to let the network output is all 0.}
+%\textbf{it seem that this construction is independent of the network structure. It only needs there exist a weight to let the network output is all 0.}
 
-\textbf{write it formally.}
+%\textbf{write it formally.}
 
-\textbf{I trust you can construct an example. First a weight outputs 0, ex. all the neuron is dead and let several pairs of data is close and half of them is 0 and half of them is 1. next over-paramize(para>data) to construct a smaller value.}
+%\textbf{I trust you can construct an example. First a weight outputs 0, ex. all the neuron is dead and let several pairs of data is close and half of them is 0 and half of them is 1. next over-paramize(para>data) to construct a smaller value.}
+
 
 \subsection{Experiments}
 
@@ -316,7 +344,7 @@ $$
 \frac{\partial f}{\partial W_i}=\hat\sigma((W_n\sigma (W_{n-1}\sigma(W_{n-2}\cdots\sigma(W_1x)))-y)W_n^t)\cdots
 $$
 
-\textbf{check it!} 
+\textbf{check it!}
 
 Can we give some assumption that leads to for some $i$
 
@@ -332,7 +360,7 @@ First we would like to introduce the first order principle, \emph{i.e.} $\nabla 
 \begin{prop}
 	\textbf{(Pontryagin Maximum Principle)} Consider the optimization problem $$\min_{u\in\mathbf{U}} \phi(x(T,u))$$ for the control problem described by
 	$$\dot x = f(x,t,u),x(0)=\hat{x},u(t)\in\mathbf{U},t\in [0,T]$$
-	
+
 	Let $u^*$ be a bounded admissible control, whose corresponding trajectory $x^*(\cdot)$ is optimal for the optimization problem. Then there exists a nontrivial, absolutely continuous vector function $p(\cdot)$ which satisfies
 	$$\dot{p}(t)=-p(t)\cdot D_xf(t,x^*(t),u^*(t))$$
 	$$p(t)\cdot f(t,x^*(t),u^*(t))=\max_{u\in\mathbf{U}}\left\{p(t)\cdot f(t,x^*(t),\omega)\right\}$$
@@ -345,7 +373,7 @@ Previous works have try to find sufficient conditions for optimal control and th
 
 
 \begin{prop}
-	In addition if the functional $u\rightarrow \phi_0(x(T,u))$ from $\mathbf{U}$ into $\mathbb{R}$ is convex. Then for any trajectory satisfies the tryagin's equation is optimal. 
+	In addition if the functional $u\rightarrow \phi_0(x(T,u))$ from $\mathbf{U}$ into $\mathbb{R}$ is convex. Then for any trajectory satisfies the tryagin's equation is optimal.
 \end{prop}
 
 This means for a given weight of the last layer, the loss surface seems good. The first order condition(PMP) can imply an optimal control, which is also been proved in \cite{bartlett2018representing} in discrete sense.
