@@ -346,12 +346,6 @@ In this subsection, we also use the squared $\ell_2$ loss as the loss function b
 %\textbf{I trust you can construct an example. First a weight outputs 0, ex. all the neuron is dead and let several pairs of data is close and half of them is 0 and half of them is 1. next over-paramize(para>data) to construct a smaller value.}
 
 
-\subsection{Experiments}
-
-
-
-
-
 \subsection{Data Doesn't Matter}
 
 The success of convolution operator in neural networks is attributed to "the feature of an image depends on the local relationship of pixels in an image" and "convolution operator is invariant to translation" in common sense. However, our experiment shows that these factors may not contribute to a nice loss surface. In order to break the translation invariance and local relationship, we randomly permute the pixels in an image and doesn't change the given label. The learning curve is plotted in Figure \ref{randomperb}.
@@ -419,7 +413,6 @@ This means for a given weight of the last layer, the loss surface seems good. Th
 There is another type of conditions utilizing the definition of value function
 $$V(s,y)=\inf_{u\in\mathbf{U_{s,y}}}\psi(T,x(T,u,s,y)),$$
 where $\mathbf{U_{s,y}}$ denotes all the trajectory satisfies $x(s)=y$. The value function satisfies the Hamilton-Jacobi equation $$\partial_sV(s,y)+\inf_{\omega\in\mathbf{U}}\left\{\nabla_yV(s,y)\cdot f(s,y,\omega)\right\}=0.$$
-\subsection{Experiments}
 
 \section{Further Directions}
 
