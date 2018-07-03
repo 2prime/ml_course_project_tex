@@ -260,6 +260,11 @@ c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\rig
 \]
 \end{proof}
 
+This proposition gives theoretical guarantee that if we learn a neural network with small weight, 
+which is always what we want (for both numerical stability of the optimization algorithm and complexity control for generalization property), 
+the training loss will not become larger too much than the global minimum of the shallow one. 
+This gives another perspective to explain why we always initialize the network with a small weight 
+and use a norm control regularizer.
 
 \subsection{A counterexample}
 In this section, we give a simple example that shows the critical point of two-layer network does not have to be better
@@ -286,7 +291,6 @@ than one-layer network's global minimum. So in a sense, our result cannot be imp
 \caption{Counterexample: The network structure is the two-layer ResNet with activation function "polished ReLU",
 which is based on ReLU but smooth in 0's neighborhood and has derivative 0 at 0. Then the weight above is a critical point of two-layer network . But it is obviously poorer than one-layer network's global minimum with weight $\mathbf V_1=\mathbf 0, \mathbf w=(1,0)$.}
 \end{table}
-
 
 \section{Better target function leads to better loss surface}
 
