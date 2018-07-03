@@ -41,6 +41,7 @@
 
 \usepackage{geometry}
 \geometry{left=2.54cm,right=2.54cm,top=2.54cm,bottom=2.54cm}
+\renewcommand\arraystretch{1.25}
 
 \theoremstyle{plain}
 \newtheorem{thm}{Theorem}
@@ -164,14 +165,14 @@ residual layers and train a shallower network instead. In this section, we exten
 	then for any $\mathbf{x},y$,
     \begin{equation}\label{lemma1}
     \iprod{\text{vec}(\mathbf{G})}
-    {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}
+    {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)\right)}
     +\delta
-    \geq F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)
-    -F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y),
+    \geq F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)
+    -F_1(\mathbf{w}^*,\mathbf{V}_1^*),
     \end{equation}
     where
     \[\delta=c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
-    \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}.\]
+    \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)}.\]
 \end{lem}
 
 \begin{proof}
@@ -200,9 +201,9 @@ residual layers and train a shallower network instead. In this section, we exten
     Since $\ell(p;y)=(p-y)^2$, we have $d\ell(p;y)=2(p-y)$. Taking expectation over $\mathbf{x}$ and $y$ on both sides yields
     \begin{align*}
     &\iprod{\text{vec}(\mathbf{G})}
-        {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}\\
-    \geq & F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)
-    -F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
+        {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)\right)}\\
+    \geq & F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)
+    -F_1(\mathbf{w}^*,\mathbf{V}_1^*)
         -c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\gamma,
     \end{align*}
     where
@@ -216,7 +217,7 @@ residual layers and train a shallower network instead. In this section, we exten
         \gamma & \leq \sqrt{\mathbb{E}_{\mathbf{x},y}
         \Big(\mathbf{w}^\mathrm{T}\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
         +\mathbf{V}_2f_{2,\theta}\left(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})\right)\big)-y\Big)^2}\\
-        & = \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}.
+        & = \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)}.
     \end{align*}
     Thus the claim.
 \end{proof}
@@ -226,37 +227,36 @@ Let $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ be a critical point of the two
 Assume $\mathbf{w}\neq\mathbf{0}$ and
 for any $\mathbf{x}$, $\norm{f_1(\mathbf{x})}_\infty<\frac c 2$. Then for any $\mathbf{w}^*,\mathbf{V}_1^*$,
 \[
-\sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)}\leq
+\sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2\right)}\leq
 c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
-    +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{w},y)}.
+    +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*)}.
 \]
 \end{prop}
 
 \begin{proof}
 Since $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ is the critical point,
-$\nabla F_{2,\theta}(\mathbf{w}^*,\mathbf{V}_1^*,\mathbf{V}_2^*;\mathbf{x},y)=\mathbf{0}$.
+$\nabla F_{2,\theta}(\mathbf{w}^*,\mathbf{V}_1^*,\mathbf{V}_2^*)=\mathbf{0}$.
 
 Plugging into (\ref{lemma1}), we have
 \[
-    F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)
+    F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2\right)
     -c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
-    \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}-F_1\left(\mathbf{w}^*,\mathbf{V}_1^*;
-    \mathbf{x},y\right)\leq 0.
+    \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)}-F_1\left(\mathbf{w}^*,\mathbf{V}_1^*\right)\leq 0.
 \]
 Simple calculation shows
 \[
-    \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)}\leq
+    \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2\right)}\leq
     \frac{
     c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
-    +\sqrt{4F_1\left(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y\right)+
+    +\sqrt{4F_1\left(\mathbf{w}^*,\mathbf{V}_1^*\right)+
     c^2\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1^2}
     }{2}.
 \]
-For $\sqrt{A+B}\leq\sqrt{A}+\sqrt{B}$, we have
+Using $\sqrt{A+B}\leq\sqrt{A}+\sqrt{B}$, we have
 \[
-    \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)}\leq
+    \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2\right)}\leq
 c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
-    +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{w},y)}.
+    +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*)}.
 \]
 \end{proof}
 
