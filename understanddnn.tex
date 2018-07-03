@@ -1,0 +1,539 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2018
+
+% ready for submission
+%\usepackage{nips_2018}
+
+% to compile a preprint version, e.g., for submission to arXiv, add
+% add the [preprint] option:
+\usepackage[preprint]{nips_2018}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+% \usepackage[final]{nips_2018}
+
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{nips_2018}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{comment}
+\usepackage{url}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{natbib}
+\usepackage{graphicx}
+
+\usepackage{geometry}
+\geometry{left=2.54cm,right=2.54cm,top=2.54cm,bottom=2.54cm}
+\renewcommand\arraystretch{1.25}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{cor}{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{rem}{Remark}
+\newtheorem{defn}{Definition}
+\newtheorem{exmp}{Example}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\bracket}[1]{\left(#1\right)}
+\newcommand{\sgn}[1]{\text{sgn}\left(#1\right)}
+\newcommand{\dis}{\displaystyle}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\diag}{\text{diag}}
+\newcommand{\Diag}{\text{Diag}}
+\newcommand{\cond}{\text{cond}}
+\newcommand{\conv}{\text{conv}}
+\newcommand{\rank}{\text{rank}}
+\newcommand{\dist}{\text{dist}}
+\newcommand{\dom}{\text{dom}}
+\newcommand{\epi}{\text{epi}}
+\newcommand{\Prox}{\text{Prox}}
+\newcommand{\Env}{\text{Env}}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\iprod}[2]{\left\langle #1,#2 \right\rangle}
+
+\title{Understanding The Mystery Of Deep Learning Loss Surface}
+
+% The \author macro works with any number of authors. There are two
+% commands used to separate the names and addresses of multiple
+% authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to
+% break the lines. Using \AND forces a line break at that point. So,
+% if LaTeX puts 3 of 4 authors names on the first line, and the last
+% on the second line, try using \AND instead of \And before the third
+% author name.
+
+\author{
+    Siyu Chen, Yiping Lu, Tianle Cai, Kewen Wu\\
+Peking University
+  %% examples of more authors
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \AND
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+}
+
+\begin{document}
+% \nipsfinalcopy is no longer used
+
+\maketitle
+
+\begin{abstract}
+Deep neural networks have become the state-of-the-art
+models in numerous machine learning
+tasks. However, there is less theory to give the guarantee for both the optimization process and the generalization properties. In this technical report, we focus mainly on the optimization perspective, \emph{i.e.}, the guarantee for the computational complexity of the optimization algorithm for deep neural networks. First we consider an important factor \emph{depth} in deep learning. Due to the non-convexity of the optimization problem, deeper doesn't lead to better predictor even only evaluating on training data, although deeper networks have stronger approximation ability. But our work shows that deep ResNet can reaches lower training loss than a shallow one. Next we will show that the right label, \emph{i.e.}, the regularity of the objective function to approximate, matters when we consider the properties of the loss surface.
+
+\end{abstract}
+
+\section{The deeper the lower training loss}
+
+Residual Networks \cite{he2016deep,he2016identity}, which introduced a identity mapping based shortcut, is a class of deep neural networks and provide state-of-the-art performance both in image classification\cite{he2016deep,he2016identity}, image reconstruction\cite{he2016deep}, deep reinforcement learning\cite{silver2017mastering} and etc. ResNets allow the training of each layer only needs to focus on fitting just the residual of the previous layer’s output and the target output. \cite{2018arXiv180406739S} proves that for all deep residual, networks' local minimum is smaller than a linear predictor's global minimum. It shows that the trained network is no worse than what we can obtain if we remove the
+residual layers and train a shallower network instead. In this section, we extend the result in \cite{2018arXiv180406739S} which shows that for a two-layer neural network, there is also a similar statement holds, \emph{i.e.}, a learned two-layer residual network is better than a one-layer network. To describe the result formally, we first introduce some notation and definitions.
+
+We assume in this section that the output of the network and the label are both scalars.
+
+\begin{defn}[loss function]
+    $\ell(\cdot;\cdot)$ takes two scalars as input. In this section, we assume $\ell(p;y)=(p-y)^2$.
+\end{defn}
+
+\begin{defn}[loss of two-layer ResNet]
+    We assume $f_1$ is a function without any parameter. Let $f_{2,\theta}$ denote a twice differentiable function $f_2$ with parameter $\theta$, then the loss of a two-layer resnet can be written as:
+    \[L_2(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta;\mathbf{x},y):=\ell\left(\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})));y\right)\]
+    When fixing $\theta$, we define
+    \[L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y):=L_2(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta;\mathbf{x},y)\]
+    We also define the expected loss over a distribution of $\mathbf{x}$ and $y$ as
+    \[F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2):=\mathbb{E}_{\mathbf{x},y}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\]
+\end{defn}
+
+\begin{defn}[loss of one-layer ResNet]
+    \begin{align*}
+        L_1(\mathbf{w},\mathbf{V}_1;\mathbf{x},y)&:=L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{0};\mathbf{x},y)=\ell\left(\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x}));y\right)\\
+    F_1(\mathbf{w},\mathbf{V}_1)&:=\mathbb{E}_{\mathbf{x},y}L_1(\mathbf{w},\mathbf{V}_1;\mathbf{x},y)=F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{0})
+    \end{align*}
+\end{defn}
+
+\begin{flushleft}
+    Let $\norm{\mathbf{x}}$ denote the Euclidean norm of vector $\mathbf{x}$, $\norm{\mathbf{X}}_2,\norm{\mathbf{X}}_F$ denote the spectral norm and the Frobenius norm of matrix $\mathbf{X}$ respectively, and $\mathbf{x}\circ\mathbf{y}$ denote the entry-wise product of $\mathbf{x}$ and $\mathbf{y}$.
+\end{flushleft}
+
+\begin{lem}
+    Fix some $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$,
+    where $\mathbf{w}\neq\mathbf{0}$.
+    Assume for any $\mathbf{x}$, $\norm{f_1(\mathbf{x})}_\infty<\frac c 2$.
+    For any $\mathbf{w}^*$,$\mathbf{V}_1^*$, define the matrix
+    \[\mathbf{G}=
+    \left(\mathbf{w}-\mathbf{w}^*;
+    \mathbf{0};
+    \frac{\mathbf{w}\left(\mathbf{w}^{*}\right)^\mathrm{T}}{\norm{\mathbf{w}}^2}\mathbf{V}_2\right)\]
+    then for any $\mathbf{x},y$,
+    \begin{equation}\label{lemma1}
+    \iprod{\text{vec}(\mathbf{G})}
+    {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)\right)}
+    +\delta
+    \geq F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)
+    -F_1(\mathbf{w}^*,\mathbf{V}_1^*),
+    \end{equation}
+    where
+    \[\delta=c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
+    \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)}.\]
+\end{lem}
+
+\begin{proof}
+    We define $d\ell(\mathbf{x},y)=\dis\frac{\partial}{\partial p}\ell(p;y)
+    \bigg|_{p=\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))}$ in order to simplify notation.
+
+    It can be easily verified that
+    \begin{align*}
+    \frac{\partial}{\partial\mathbf{w}}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)&=d\ell(\mathbf{x},y)(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))\\
+        \frac{\partial}{\partial\mathbf{V}_2}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)&=d\ell(\mathbf{x},y)\mathbf{w}f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x}))^\mathrm{T}
+    \end{align*}
+    Using the definition of $\mathbf{G}$, we can do the following calculation:
+    \begin{align*}
+    &\iprod{\text{vec}(\mathbf{G})}{\text{vec}\left(\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}\\
+        =&d\ell(\mathbf{x},y)\left(\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))-\left(\mathbf{w}^*\right)^\mathrm{T}(\mathbf{x}+\mathbf{V}_1^*f_1(\mathbf{x}))\right)\\
+        &\quad +d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)\\
+    \geq &L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
+        +d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)\\
+    \geq &L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
+        -\abs{d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)}\\
+    \geq &L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
+        -\frac c 2\abs{d\ell(\mathbf{x},y)}\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\\
+    \end{align*}
+    The first inequality uses the convexity of $\ell(\cdot;\cdot)$ in its first argument.
+
+    Since $\ell(p;y)=(p-y)^2$, we have $d\ell(p;y)=2(p-y)$. Taking expectation over $\mathbf{x}$ and $y$ on both sides yields
+    \begin{align*}
+    &\iprod{\text{vec}(\mathbf{G})}
+        {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)\right)}\\
+    \geq & F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)
+    -F_1(\mathbf{w}^*,\mathbf{V}_1^*)
+        -c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\gamma,
+    \end{align*}
+    where
+    \[
+        \gamma=\mathbb{E}_{\mathbf{x},y}
+        \abs{\mathbf{w}^\mathrm{T}\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
+        +\mathbf{V}_2f_{2,\theta}\left(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})\right)\big)-y}.
+    \]
+    Using Jensen inequality, we have
+    \begin{align*}
+        \gamma & \leq \sqrt{\mathbb{E}_{\mathbf{x},y}
+        \Big(\mathbf{w}^\mathrm{T}\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
+        +\mathbf{V}_2f_{2,\theta}\left(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})\right)\big)-y\Big)^2}\\
+        & = \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)}.
+    \end{align*}
+    Thus the claim.
+\end{proof}
+
+\begin{prop}
+Let $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ be a critical point of the two-layer ResNet.
+Assume $\mathbf{w}\neq\mathbf{0}$ and
+for any $\mathbf{x}$, $\norm{f_1(\mathbf{x})}_\infty<\frac c 2$. Then for any $\mathbf{w}^*,\mathbf{V}_1^*$,
+\[
+\sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2\right)}\leq
+c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
+    +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*)}.
+\]
+\end{prop}
+
+\begin{proof}
+Since $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ is the critical point,
+$\nabla F_{2,\theta}(\mathbf{w}^*,\mathbf{V}_1^*,\mathbf{V}_2^*)=\mathbf{0}$.
+
+Plugging into (\ref{lemma1}), we have
+\[
+    F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2\right)
+    -c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
+    \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2)}-F_1\left(\mathbf{w}^*,\mathbf{V}_1^*\right)\leq 0.
+\]
+Simple calculation shows
+\[
+    \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2\right)}\leq
+    \frac{
+    c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
+    +\sqrt{4F_1\left(\mathbf{w}^*,\mathbf{V}_1^*\right)+
+    c^2\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1^2}
+    }{2}.
+\]
+Using $\sqrt{A+B}\leq\sqrt{A}+\sqrt{B}$, we have
+\[
+    \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2\right)}\leq
+c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
+    +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*)}.
+\]
+\end{proof}
+
+This proposition gives theoretical guarantee that if we learn a neural network with small weight,
+which is always what we want (for both numerical stability of the optimization algorithm and complexity control for generalization property),
+the training loss will not become larger too much than the global minimum of the shallow one.
+This gives another perspective to explain why we always initialize the network with a small weight
+and use a norm control regularizer.
+
+\subsection{A counterexample}
+In this subsection, we give a simple example that shows the critical point of two-layer network does not have to be better
+than one-layer network's global minimum. So in a sense, our result cannot be improved.
+
+\begin{table}[H]
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\begin{tabular}{|c|c|}
+\hline $\mathbf x^\mathrm{T}$&$y$\\
+\hline $(1,1)$&1\\
+\hline
+\end{tabular}
+\end{minipage}
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline $\mathbf V_1$&$f_1$&$\mathbf V_2$&$f_2$&$\mathbf w$\\
+\hline $-\mathbf{I}_{2\times 2}$&Identity&Arbitrary&Polished ReLU&Arbitrary\\
+\hline
+\end{tabular}
+\end{minipage}
+\\
+\caption{Counterexample: The network structure is the two-layer ResNet with activation function "polished ReLU",
+which is based on ReLU but smooth in 0's neighborhood and has derivative 0 at 0. Then the weight above is a critical point of two-layer network . But it is obviously poorer than one-layer network's global minimum with weight $\mathbf V_1=\mathbf 0, \mathbf w=(1,0)$.}
+\label{counter1}
+\end{table}
+
+\section{Better target function leads to better loss surface}
+
+\cite{cicek2018saas,cicek2018input} demonstrates the idea that "the regularity of the target function leads to the smoothness of the loss surface" and they designed semi-supervised learning algorithms based on this observation, \emph{i.e.}, learning speed as a supervisor. We reproduce the experiment that bad quality of given label will lead to slower training speed and the results is shown in Figure \ref{saas}.
+
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=2.5in]{cifar.jpeg}
+    \includegraphics[width=2.5in]{mnist.jpg}
+    \caption{Comparison of training the neural network to fit the given label and fit a random labeled dataset using \textbf{gradient descent}. Left hand side is the figure for DenseNet121 training on CIFAR10 dataset and right hand side the one for LeNet5 training on MNIST. It seems that there exists a saddle point around $\log 10$. \textbf{All the loss we evaluate after the last layer is the cross-entropy loss.}}
+    \label{saas}
+\end{figure}
+
+Figure \ref{saas} shows that the loss of dataset labeled with ground truth drops quickly to zero even when we use the gradient descent algorithm without any noise, which implies that the loss surface in this case is pretty good. However, if we label the data with random choices, the learning curve changes a lot. The loss first quickly drops to a place around $\log 10$ and stops here for a long time. Once the loss leaves $\log 10$, the loss drops faster. This phenomenon suggests that the learning process was going through a saddle point. Repeating the experiment several times, we find that $\log10$ seems a magic number, that all training process starting from a random initialization hits a saddle point near $\log 10$. As the loss function for the last layer output we denote in the experiment is the cross-entropy loss, $\log 10$ is the place where we give a random guess.
+
+
+\subsection{A counterexample}
+
+Inspired by the magic number $\log 10$, we give a counterexample that there exists a weight, which satisfies first order condition but is not a global minimum for some bad label.
+
+In this subsection, we also use the squared $\ell_2$ loss as the loss function between the target label and the network output. That is to say our objective function is designed as $\mathbb{E}_{(\mathbf x,y)\sim Dataset}\norm{f_w(\mathbf x)-y}_2^2$. When the output is a scalar, the objective function can also be written as $\mathbb{E}_{(\mathbf x,y)\sim\text{Dataset}}(f_w(\mathbf x)-y)^2$. The counterexample is constructed in the following table.%If the dataset is generated via two independent random variable $x,y$ and $P(y=1)=P(y=-1)=1/2$, then $f_w(x)=0$ for all $x$ is a point that satisfies the first order condition.
+
+\begin{table}[H]
+\begin{minipage}[t]{0.4\linewidth}
+\flushright
+\begin{tabular}{|c|c|c|}
+\hline $\mathbf x^\mathrm{T}$&$y$&$y'$\\
+\hline $(0,0,0)$&$0$&$0$\\
+\hline $(0,0,1)$&$1$&$0$\\
+\hline $(0,1,0)$&$1$&$0$\\
+\hline $(0,1,1)$&$1$&$0$\\
+\hline $(1,0,0)$&$0$&$1$\\
+\hline $(1,0,1)$&$0$&$1$\\
+\hline $(1,1,0)$&$1$&$1$\\
+\hline $(1,1,1)$&$0$&$1$\\
+\hline
+\end{tabular}
+\end{minipage}
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\begin{tabular}{|c|c|}
+\hline $\mathbf W_1$&$\mathbf W_2$\\
+\hline $(-2,1,0)$&$1$\\
+\hline
+\end{tabular}
+\end{minipage}
+\\
+\caption{Counterexample: The network structure is simple two-layer feedforward neural network with activation function "polished ReLU" which is based on ReLU but smooth in $0$'s neighborhood and has derivative $0$ at $0$. Specifically, the network works as:
+    $f_w(\mathbf x)=\mathbf W_2\sigma(\mathbf W_1 \mathbf x)$.
+    Then for data $(\mathbf x,y)$ whose label is randomly drawn, the weights $\mathbf W_1, \mathbf W_2$ reach a point that satisfies the first order condition, yet it is not a global minimum (when $\mathbf W_1'=(-2,1,1), \mathbf W_2'=1$, the loss is less than the example) . Meanwhile $\mathbf W_1, \mathbf W_2$ is not a critical point for data $(\mathbf x,y')$ whose label obviously depends on $\mathbf x$ (indeed coincide with the first coordinate of $\mathbf x$) which means the optimization will not stuck at the $\mathbf W_1, \mathbf W_2$ above for dependent data.}
+\end{table}
+
+%\textbf{it seem that this construction is independent of the network structure. It only needs there exist a weight to let the network output is all 0.}
+
+%\textbf{write it formally.}
+
+%\textbf{I trust you can construct an example. First a weight outputs 0, ex. all the neuron is dead and let several pairs of data is close and half of them is 0 and half of them is 1. next over-paramize(para>data) to construct a smaller value.}
+
+
+\subsection{Data doesn't matter}
+
+The success of convolution operator in neural networks is attributed to "the feature of an image depends on the local relationship of pixels in an image" and "convolution operator is invariant to translation" in common sense. However, our experiment shows that these factors may not contribute to a nice loss surface. In order to break the translation invariance and local relationship, we randomly permute the pixels in an image and do not change the given label. The learning curve is plotted in Figure \ref{randomperb}. The relationship between test loss and training loss is shown in Figure \ref{genperb}. We can see that randomly permuting the input image does not hamper the generalization ability of the network.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=2.5in]{gdrp.jpg}
+    \includegraphics[width=2.5in]{adamrp.jpg}
+    \caption{Learning curves of ResNet-18 on CIFAR-10 dataset and a random permuted one. Left hand side is the learning curve of gradient descent algorithm and the right hand side is the curve of ADAM algorithm.}
+    \label{randomperb}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=2.5in]{gengap.png}
+    \includegraphics[width=2.5in]{gentrain.png}
+    \caption{Curve of generalization gap and test loss v.s. training loss of DenseNet-121 on CIFAR-10 dataset and a random permuted one.}
+    \label{genperb}
+\end{figure}
+
+
+\begin{comment}
+\section{Loss surface for one data}
+
+In the next section, we discuss the sufficiency of the cooperation of the data to give a guarantee for a good loss landscape. In this section, we consider the landscape when there is only one data.
+
+
+\subsection{Vanilla feedforward neural networks}
+Consider the loss function of a vanilla feed forward neural network,
+
+$$f(\mathbf W_1,\cdots,\mathbf W_n)=\norm{\mathbf W_n\sigma (\mathbf W_{n-1}\sigma(\mathbf W_{n-2}\cdots\sigma(\mathbf W_1\mathbf x)))-y}_2^2.$$
+
+Here $x$ is the input data and $y$ is the associated label. $\mathbf W_i$ is the weight of the $i$-th label and $\sigma$ is the activation function.
+
+
+$$
+\frac{\partial f}{\partial \mathbf W_i}=\hat\sigma((\mathbf W_n\sigma (\mathbf W_{n-1}\sigma(\mathbf W_{n-2}\cdots\sigma(\mathbf W_1\mathbf x)))-y)\mathbf W_n^\mathrm{T})\cdots
+$$
+
+\textbf{check it!}
+
+Can we give some assumption that leads to for some $i$
+
+$$
+\frac{\partial f}{\partial \mathbf W_i} \ge c|(\mathbf W_n\sigma (\mathbf W_{n-1}\sigma(\mathbf W_{n-2}\cdots\sigma(\mathbf W_1\mathbf x)))-y|
+$$
+\end{comment}
+
+\section{Loss surface for one data}
+
+In the next section, we will discuss the effect of the cooperation of the data to guarantee a good loss landscape. In this section, we consider the landscape when there is only one data.
+
+\subsection{Theoretical results}
+
+We still assume that the loss function is squared $\ell_2$ loss, and the data is $(\mathbf{x},\mathbf{y})$. Note that the label $\mathbf{y}$ can also be a vector. Without loss of generality, we assume that the neural network ends with a fully-connected layer, so the objective function can be written as:
+$$
+F(\mathbf{W},\theta)=\norm{\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y}}_2^2
+$$
+where $\mathbf{W}$ is the weight matrix of the final FC layer, and $\theta$ represents the parameters of previous layers.
+
+\begin{lem}
+The following inequality holds:
+$$
+\norm{\nabla F(\mathbf{W},\theta)}_F\geq 2\norm{f_{\theta}(\mathbf{x})}_2\norm{\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y}}_2
+$$
+
+\begin{proof}
+We simply take gradient with respect to $\mathbf{W}$:
+$$
+\nabla_{\mathbf{W}}F(\mathbf{W},\theta)=2(\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y})\left(f_{\theta}(\mathbf{x})\right)^{\mathrm{T}}
+$$
+Computing Frobenius norm on both sides yields the following equation:
+$$
+\norm{\nabla_{\mathbf{W}}F(\mathbf{W},\theta)}_F=2\norm{(\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y})\left(f_{\theta}(\mathbf{x})\right)^{\mathrm{T}}}_F=2\norm{\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y}}_2\norm{f_{\theta}(\mathbf{x})}_2
+$$
+The inequality in the lemma then follows since $\norm{\nabla F(\mathbf{W},\theta)}_F\geq\norm{\nabla_{\mathbf{W}}F(\mathbf{W},\theta)}_F$.
+\end{proof}
+\end{lem}
+
+\begin{thm}
+Assume $\theta\in\{\phi:f_{\phi}(\mathbf{x})\neq\mathbf{0}\}$, then every critical point $(\mathbf{W},\theta)$ of $F$ is a global minima.
+
+\begin{proof}
+Setting $\nabla F(\mathbf{W},\theta)=\mathbf{0}$ and using $f_{\theta}(\mathbf{x})\neq\mathbf{0}$ yields:
+$$
+\norm{\mathbf{W}f_{\theta}(\mathbf{x})-\mathbf{y}}_2=0
+$$
+and thus $F(\mathbf{W},\theta)=0$.
+\end{proof}
+\end{thm}
+
+\begin{rem}
+The one-data counterexample in Table \ref{counter1} exists simply because when $\mathbf{V}_1=-\mathbf{I}$ and $f_1$ is identity mapping, $\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_2(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x}))$ would always be $\mathbf{0}$, so such a parameter setting does not satisfy the restriction on $\theta$ in the theorem above.
+\end{rem}
+
+\subsection{A control view of deep residual networks}
+
+Based on the observation that deep residual network $x_{k+1}=x_{k}+f(x_k)$ can be considered as the forward Euler scheme for an ODE, recent works begin to utilize the ODE to model the deep networks. The learning process can be understand as solving a control problem. There are a lot of work focusing on finding sufficient conditions for the optimal control. In this section, we briefly introduce some of the results and hope to bring some insight into understanding the loss surface of the neural networks. All the theorem in this section can be found in \cite{bressan2007introduction}.
+
+First we would like to introduce the first order principle, \emph{i.e.}, $\nabla f=0$, for the control problem.
+\begin{prop}
+    \textbf{(Pontryagin Maximum Principle)} Consider the optimization problem $$\min_{u\in\mathbf{U}} \phi(x(T,u))$$ for the control problem described by
+    $$\dot x = f(x,t,u),x(0)=\hat{x},u(t)\in\mathbf{U},t\in [0,T].$$
+
+    Let $u^*$ be a bounded admissible control, whose corresponding trajectory $x^*(\cdot)$ is optimal for the optimization problem. Then there exists a nontrivial, absolutely continuous vector function $p(\cdot)$ which satisfies
+    $$\dot{p}(t)=-p(t)\cdot D_xf(t,x^*(t),u^*(t))$$
+    $$p(t)\cdot f(t,x^*(t),u^*(t))=\max_{u\in\mathbf{U}}\left\{p(t)\cdot f(t,x^*(t),\omega)\right\}$$
+    at almost every time $t\in[0,T]$, together with the terminal conditions
+    $$p(T)=\lambda_0\nabla\phi_i(x^*(T))$$
+    for some constants $\lambda_0$.
+\end{prop}
+
+Previous works have tried to find sufficient conditions for optimal control and there are results claiming that if the terminal cost function $\phi$ is convex and Pontryagin Maximum Principle holds, the control is an optimal control.
+
+
+\begin{prop}
+    In addition, if the functional $u\rightarrow \phi_0(x(T,u))$ from $\mathbf{U}$ into $\mathbb{R}$ is convex. Then any trajectory satisfying the tryagin's equation is optimal.
+\end{prop}
+
+This means for a given weight of the last layer, the loss surface seems good. The first order condition (PMP) can imply an optimal control, which is also been proved in \cite{bartlett2018representing} in discrete sense.
+
+There is another type of conditions utilizing the definition of value function
+$$V(s,y)=\inf_{u\in\mathbf{U_{s,y}}}\psi(T,x(T,u,s,y)),$$
+where $\mathbf{U_{s,y}}$ denotes all the trajectory satisfies $x(s)=y$. The value function satisfies the Hamilton-Jacobi equation $$\partial_sV(s,y)+\inf_{\omega\in\mathbf{U}}\left\{\nabla_yV(s,y)\cdot f(s,y,\omega)\right\}=0.$$
+
+\section{Further directions}
+
+\subsection{Fast algorithms escaping saddle points}
+
+We also test different algorithms (Momentum SGD, ADAM and AdaDelta) to escape the saddle point around $\log 10$ and the result is demonstrated in Figure \ref{optsadd}. The result shows that both ADAM and AdaDelta can escape from the saddle point and ADAM escapes faster. Can we analyze the escape rate for the AdaDelta? (For ADAM, it has a momentum scheme on gradient which is hard to analyze in the non-convex setting. There are recent papers analyzing AdaGrad in non-convex setting.) There are several factors influencing the speed of accelerating the escaping process:
+
+\begin{itemize}
+    \item The adaptive learning rate is large in ADAM and AdaDelta. When stuck in a saddle point, $H_{t+1}=(1-m)H_t+m\hat{g_t}^2$ will become smaller exponentially which means the stepsize increases exponentially.
+    \item The adaptive learning rate also estimates the column-wise curvature of the loss surface. If the curvature is estimated correctly, the learning steps will go through the direction associated largest eigenvalue of the Hessian which is the fastest direction to escape the saddle point.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=2.5in]{opt.jpg}
+    \includegraphics[width=2.5in]{saddle.jpg}
+    \caption{Comparison between different optimization algorithm to escape the saddle point around $\log 10$. We test Momentum SGD, ADAM and AdaDelta. ADAM and AdaDelta is able to escape from the saddle point and ADAM performs better. The right hand side figure is a zoom-in version of the first one.}
+    \label{optsadd}
+\end{figure}
+
+\subsection{Fast (decoupled) optimization algorithm based on the control perspective}
+
+There are works showing that we can learn a neural network even if we fixed the last layer's weights. The learning problem turns to a standard control problem. This is natural to apply a \textbf{reinforcement learning} algorithm here. In the previous section, we have introduced that the \textbf{value function} provides a sufficient condition for the control problem. It's natural to use a \textbf{Q-learning} algorithm here to decouple the gradient computation during the back propagation, for the Bellman equation only depends on the previous state the following state.
+
+
+Another view (It may be another approach) of this kind of decouple learning algorithm is that we can adopt the domain decomposition technique to parallelize the computation of the backward ODE in PMP. Rewrite the adjoint equation in PMP here
+
+$$
+\dot p(t) = -p(t)\cdot D_xf(t,x(t),u(t)),p(T)=\nabla \psi(x(T))
+$$
+
+Equally, the equation can be written as
+
+$$
+\dot p_1(t) = -p_1(t)\cdot D_xf(t,x(t),u(t))|_{t\in[T/2,T]},p_1(T)=\nabla \psi(x(T))$$
+$$
+\dot p_2(t) = -p_2(t)\cdot D_xf(t,x(t),u(t))|_{t\in[0,T/2]},p_2(T/2)=p_1(T/2)
+$$
+
+If we adopt a Gaussian-Seidel like algorithm, we decouple the gradient computation between $[0,T/2]$ and $[T/2,T]$.
+
+\subsection{Proper assumption for label and data assumption}
+
+In our paper, we claim that all the data should cooperate in order to get a good gradient, but how can we define the cooperation of gradients in mathematics.
+
+\subsection{Loss surface near the converge point}
+\cite{DBLP:journals/corr/abs-1712-10132} shows the loss surface of neural networks equipped with a hinge loss criterion and ReLU or leaky ReLU nonlinearities has a multilinear structure. Specifically, we can find the loss is a piece-wise multilinear form. Base on this observation, we are now interested in the behavior of the weights that jumps between the pieces during optimization.
+We did some experiments and counted the times of "jump", \emph{i.e.}, the activation function ReLU's value goes to different linear part during the optimization. We also found that the jump times increase as the optimization goes on. At the same time the jump times seems converge, which may indicate that the optimization leads to an area at the edge of many pieces of the loss surface. This also makes us rethink what we get from optimization.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=2.5in]{PieceJump.jpg}
+    \caption{Jump times of ReLU (from $0$ to positive) per epoch. We use LeNet and test on Cifar10 database.}
+    \label{piecejump}
+\end{figure}
+
+\bibliographystyle{plain}
+\bibliography{provably}
+
+\end{document}
