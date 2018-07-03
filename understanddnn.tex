@@ -134,7 +134,7 @@ residual layers and train a shallower network instead. In this section, we exten
 
 \begin{defn}[loss of two-layer Resnet]
 	We assume $f_1$ is a function without any parameter. Let $f_{2,\theta}$ denote a twice differentiable function $f_2$ with parameter $\theta$, then the loss of a two-layer resnet can be written as:
-	\[L_2(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta;\mathbf{x},y):=\ell\left(\mathbf{w}^T(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})));y\right)\]
+    \[L_2(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta;\mathbf{x},y):=\ell\left(\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})));y\right)\]
 	When fixing $\theta$, we define
 	\[L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y):=L_2(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta;\mathbf{x},y)\]
 	We also define the expected loss over a distribution of $\mathbf{x}$ and $y$ as
@@ -143,7 +143,7 @@ residual layers and train a shallower network instead. In this section, we exten
 
 \begin{defn}[loss of one-layer Resnet]
 	\begin{align*}
-	L_1(\mathbf{w},\mathbf{V}_1;\mathbf{x},y)&:=L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{0};\mathbf{x},y)=\ell\left(\mathbf{w}^T(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x}));y\right)\\
+        L_1(\mathbf{w},\mathbf{V}_1;\mathbf{x},y)&:=L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{0};\mathbf{x},y)=\ell\left(\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x}));y\right)\\
 	F_1(\mathbf{w},\mathbf{V}_1)&:=\mathbb{E}_{\mathbf{x},y}L_1(\mathbf{w},\mathbf{V}_1;\mathbf{x},y)=F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{0})
 	\end{align*}
 \end{defn}
@@ -160,7 +160,7 @@ residual layers and train a shallower network instead. In this section, we exten
     \[\mathbf{G}=
     \left(\mathbf{w}-\mathbf{w}^*;
     \mathbf{0};
-    \frac{\mathbf{w}\left(\mathbf{w}^{*}\right)^T}{\norm{\mathbf{w}}^2}\mathbf{V}_2\right)\]
+    \frac{\mathbf{w}\left(\mathbf{w}^{*}\right)^\mathrm{T}}{\norm{\mathbf{w}}^2}\mathbf{V}_2\right)\]
 	then for any $\mathbf{x},y$,
     \[\iprod{\text{vec}(\mathbf{G})}
     {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}
@@ -168,30 +168,30 @@ residual layers and train a shallower network instead. In this section, we exten
     \geq F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)
     -F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y),\]
     where
-    \[\delta=c\norm{\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
+    \[\delta=c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
     \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}.\]
 \end{lem}
 
 \begin{proof}
 	We define $d\ell(\mathbf{x},y)=\dis\frac{\partial}{\partial p}\ell(p;y)
-    \bigg|_{p=\mathbf{w}^T(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))}$ in order to simplify notation.
+    \bigg|_{p=\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))}$ in order to simplify notation.
 
 	It can be easily verified that
 	\begin{align*}
 	\frac{\partial}{\partial\mathbf{w}}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)&=d\ell(\mathbf{x},y)(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))\\
-	\frac{\partial}{\partial\mathbf{V}_2}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)&=d\ell(\mathbf{x},y)\mathbf{w}f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x}))^T
+        \frac{\partial}{\partial\mathbf{V}_2}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)&=d\ell(\mathbf{x},y)\mathbf{w}f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x}))^\mathrm{T}
 	\end{align*}
 	Using the definition of $\mathbf{G}$, we can do the following calculation:
 	\begin{align*}
 	&\iprod{\text{vec}(\mathbf{G})}{\text{vec}\left(\nabla L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}\\
-	=&d\ell(\mathbf{x},y)\left(\mathbf{w}^T(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))-\left(\mathbf{w}^*\right)^T(\mathbf{x}+\mathbf{V}_1^*f_1(\mathbf{x}))\right)\\
-        &\quad +d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)\\
+        =&d\ell(\mathbf{x},y)\left(\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})+\mathbf{V}_2f_{2,\theta}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})))-\left(\mathbf{w}^*\right)^\mathrm{T}(\mathbf{x}+\mathbf{V}_1^*f_1(\mathbf{x}))\right)\\
+        &\quad +d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)\\
 	\geq &L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
-        +d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)\\
+        +d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)\\
 	\geq &L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
-        -\abs{d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)}\\
+        -\abs{d\ell(\mathbf{x},y)\left(\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)f_1(\mathbf{x})\right)}\\
 	\geq &L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)-L_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
-        -\frac c 2\abs{d\ell(\mathbf{x},y)}\norm{\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\\
+        -\frac c 2\abs{d\ell(\mathbf{x},y)}\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\\
 	\end{align*}
 	The first inequality uses the convexity of $\ell(\cdot;\cdot)$ in its first argument.
 
@@ -201,18 +201,18 @@ residual layers and train a shallower network instead. In this section, we exten
         {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}\\
     \geq & F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)
     -F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{x},y)
-    -c\norm{\left(\mathbf{w}^*\right)^T\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\gamma,
+        -c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1^*-\mathbf{V}_1\right)}_1\gamma,
     \end{align*}
     where
     \[
         \gamma=\mathbb{E}_{\mathbf{x},y}
-        \abs{\mathbf{w}^T\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
+        \abs{\mathbf{w}^\mathrm{T}\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
         +\mathbf{V}_2f_{2,\theta}\left(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})\right)\big)-y}.
     \]
     Using Jensen inequality, we have
     \begin{align*}
         \gamma & \leq \sqrt{\mathbb{E}_{\mathbf{x},y}
-        \Big(\mathbf{w}^T\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
+        \Big(\mathbf{w}^\mathrm{T}\big(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})
         +\mathbf{V}_2f_{2,\theta}\left(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x})\right)\big)-y\Big)^2}\\
         & = \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}.
     \end{align*}
@@ -341,7 +341,7 @@ Here $x$ is the input data and $y$ is the associated label. $W_i$ is the weight 
 
 
 $$
-\frac{\partial f}{\partial W_i}=\hat\sigma((W_n\sigma (W_{n-1}\sigma(W_{n-2}\cdots\sigma(W_1x)))-y)W_n^t)\cdots
+\frac{\partial f}{\partial W_i}=\hat\sigma((W_n\sigma (W_{n-1}\sigma(W_{n-2}\cdots\sigma(W_1x)))-y)W_n^\mathrm{T})\cdots
 $$
 
 \textbf{check it!}
@@ -354,12 +354,12 @@ $$
 
 \subsection{Deep Residual Networks}
 
-Base on the observation that deep residual network $x_{k+1}=x_{k}+f(x_k)$ can be considered as the forward Euler scheme for an ODE, recent works begin to utilize the ODE to model the deep networks. The learning process can be understand as solving a control problem. There are a lot of work focusing on finding sufficient conditions for the optimal control. In this section, we briefly introduce some of the results and hope to bring some insight for understanding the loss surface of the neural networks. All the theorem in this section can be found in \cite{bressan2007introduction}.
+Based on the observation that deep residual network $x_{k+1}=x_{k}+f(x_k)$ can be considered as the forward Euler scheme for an ODE, recent works begin to utilize the ODE to model the deep networks. The learning process can be understand as solving a control problem. There are a lot of work focusing on finding sufficient conditions for the optimal control. In this section, we briefly introduce some of the results and hope to bring some insight into understanding the loss surface of the neural networks. All the theorem in this section can be found in \cite{bressan2007introduction}.
 
-First we would like to introduce the first order principle, \emph{i.e.} $\nabla f=0$, for the control problem.
+First we would like to introduce the first order principle, \emph{i.e.}, $\nabla f=0$, for the control problem.
 \begin{prop}
 	\textbf{(Pontryagin Maximum Principle)} Consider the optimization problem $$\min_{u\in\mathbf{U}} \phi(x(T,u))$$ for the control problem described by
-	$$\dot x = f(x,t,u),x(0)=\hat{x},u(t)\in\mathbf{U},t\in [0,T]$$
+	$$\dot x = f(x,t,u),x(0)=\hat{x},u(t)\in\mathbf{U},t\in [0,T].$$
 
 	Let $u^*$ be a bounded admissible control, whose corresponding trajectory $x^*(\cdot)$ is optimal for the optimization problem. Then there exists a nontrivial, absolutely continuous vector function $p(\cdot)$ which satisfies
 	$$\dot{p}(t)=-p(t)\cdot D_xf(t,x^*(t),u^*(t))$$
@@ -369,16 +369,18 @@ First we would like to introduce the first order principle, \emph{i.e.} $\nabla 
 	for some constants $\lambda_0$.
 \end{prop}
 
-Previous works have try to find sufficient conditions for optimal control and there are results claims that if the terminal cost function $\phi$ is convex and Pontryagin Maximum Principle holds, the control is an optimal control.
+Previous works have tried to find sufficient conditions for optimal control and there are results claiming that if the terminal cost function $\phi$ is convex and Pontryagin Maximum Principle holds, the control is an optimal control.
 
 
 \begin{prop}
-	In addition if the functional $u\rightarrow \phi_0(x(T,u))$ from $\mathbf{U}$ into $\mathbb{R}$ is convex. Then for any trajectory satisfies the tryagin's equation is optimal.
+	In addition, if the functional $u\rightarrow \phi_0(x(T,u))$ from $\mathbf{U}$ into $\mathbb{R}$ is convex. Then any trajectory satisfying the tryagin's equation is optimal.
 \end{prop}
 
-This means for a given weight of the last layer, the loss surface seems good. The first order condition(PMP) can imply an optimal control, which is also been proved in \cite{bartlett2018representing} in discrete sense.
+This means for a given weight of the last layer, the loss surface seems good. The first order condition (PMP) can imply an optimal control, which is also been proved in \cite{bartlett2018representing} in discrete sense.
 
-There is another another type of conditions is utilizing the definition of value function $$V(s,y)=\inf_{u\in\mathbf{U_{s,y}}}\psi(T,x(T,u,s,y))$$ where $\mathbf{U_{s,y}}$ denotes all the trajectory satisfies $x(s)=y$. The value function satisfies the Hamilton-Jacobi equation $$\partial_sV(s,y)+\inf_{\omega\in\mathbf{U}}\left\{\nabla_yV(s,y)\cdot f(s,y,\omega)\right\}=0$$
+There is another type of conditions utilizing the definition of value function 
+$$V(s,y)=\inf_{u\in\mathbf{U_{s,y}}}\psi(T,x(T,u,s,y)),$$ 
+where $\mathbf{U_{s,y}}$ denotes all the trajectory satisfies $x(s)=y$. The value function satisfies the Hamilton-Jacobi equation $$\partial_sV(s,y)+\inf_{\omega\in\mathbf{U}}\left\{\nabla_yV(s,y)\cdot f(s,y,\omega)\right\}=0.$$
 \subsection{Experiments}
 
 \section{Further Directions}
@@ -428,12 +430,13 @@ In our paper, we claim that all the data should cooperate in order to get a good
 \subsection{Combine Generalization}
 
 \subsection{Loss surface near the converge point}
-\cite{DBLP:journals/corr/abs-1712-10132} shows the loss surface of neural networks equipped with a hinge loss criterion and ReLU or leaky ReLU nonlinearities has a multilinear structure. Specifically, we can find the loss is a piecewise multilinear form. Base on this observation, we are now interested in the behavior of the weights that jumps between the pieces during optimization. We do some experience and count the times of "jump" (the activation function ReLU's value gotten from different linear part) during the optimization and found that the times increase as the optimization going on. At the same time the jump times seems converge, which may indicate that the optimization lead to a area at the edge of many pieces of the loss surface. This also makes us rethink what we get from optimization.
+\cite{DBLP:journals/corr/abs-1712-10132} shows the loss surface of neural networks equipped with a hinge loss criterion and ReLU or leaky ReLU nonlinearities has a multilinear structure. Specifically, we can find the loss is a piece-wise multilinear form. Base on this observation, we are now interested in the behavior of the weights that jumps between the pieces during optimization. 
+We did some experiments and counted the times of "jump", \emph{i.e.}, the activation function ReLU's value goes to different linear part during the optimization. We also found that the jump times increase as the optimization goes on. At the same time the jump times seems converge, which may indicate that the optimization leads to an area at the edge of many pieces of the loss surface. This also makes us rethink what we get from optimization.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=2.5in]{PieceJump.jpg}
-	\caption{Times of activation state change of ReLU(from 0 to positive) per epoch. We use Lenet and test on Cifar10 database.}
+	\caption{Jump times of ReLU (from 0 to positive) per epoch. We use LeNet and test on Cifar10 database.}
 	\label{piecejump}
 \end{figure}
 
