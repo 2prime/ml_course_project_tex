@@ -350,7 +350,7 @@ In this subsection, we also use the squared $\ell_2$ loss as the loss function b
 %\textbf{I trust you can construct an example. First a weight outputs 0, ex. all the neuron is dead and let several pairs of data is close and half of them is 0 and half of them is 1. next over-paramize(para>data) to construct a smaller value.}
 
 
-\subsection{Data Doesn't Matter}
+\subsection{Data doesn't matter}
 
 The success of convolution operator in neural networks is attributed to "the feature of an image depends on the local relationship of pixels in an image" and "convolution operator is invariant to translation" in common sense. However, our experiment shows that these factors may not contribute to a nice loss surface. In order to break the translation invariance and local relationship, we randomly permute the pixels in an image and doesn't change the given label. The learning curve is plotted in Figure \ref{randomperb}.
 
@@ -463,9 +463,9 @@ There is another type of conditions utilizing the definition of value function
 $$V(s,y)=\inf_{u\in\mathbf{U_{s,y}}}\psi(T,x(T,u,s,y)),$$
 where $\mathbf{U_{s,y}}$ denotes all the trajectory satisfies $x(s)=y$. The value function satisfies the Hamilton-Jacobi equation $$\partial_sV(s,y)+\inf_{\omega\in\mathbf{U}}\left\{\nabla_yV(s,y)\cdot f(s,y,\omega)\right\}=0.$$
 
-\section{Further Directions}
+\section{Further directions}
 
-\subsection{Fast Algorithms Escaping Saddle Points}
+\subsection{Fast algorithms escaping saddle points}
 
 We also test different algorithms (Momentum SGD, ADAM and AdaDelta) to escape the saddle point around $\log 10$ and the result is demonstrated in Figure \ref{optsadd}. The result shows that both ADAM and AdaDelta can escape from the saddle point and ADAM escapes faster. Can we analyze the escape rate for the AdaDelta? (For ADAM, it has a momentum scheme on gradient which is hard to analyze in the non-convex setting. There are recent papers analyzing AdaGrad in non-convex setting.) There are several factors influencing the speed of accelerating the escaping process:
 
@@ -482,7 +482,7 @@ We also test different algorithms (Momentum SGD, ADAM and AdaDelta) to escape th
 	\label{optsadd}
 \end{figure}
 
-\subsection{Fast (Decoupled) Optimization Algorithm Based On The Control Perspective}
+\subsection{Fast (decoupled) optimization algorithm based on the control perspective}
 
 There are works showing that we can learn a neural network even if we fixed the last layer's weights. The learning problem turns to a standard control problem. This is natural to apply a \textbf{reinforcement learning} algorithm here. In the previous section, we have introduced that the \textbf{value function} provides a sufficient condition for the control problem. It's natural to use a \textbf{Q-learning} algorithm here to decouple the gradient computation during the back propagation, for the Bellman equation only depends on the previous state the following state.
 
@@ -506,8 +506,6 @@ If we adopt a Gaussian-Seidel like algorithm, we decouple the gradient computati
 \subsection{Proper assumption for label and data assumption}
 
 In our paper, we claim that all the data should cooperate in order to get a good gradient, but how can we define the cooperation of gradients in mathematics.
-
-\subsection{Combine Generalization}
 
 \subsection{Loss surface near the converge point}
 \cite{DBLP:journals/corr/abs-1712-10132} shows the loss surface of neural networks equipped with a hinge loss criterion and ReLU or leaky ReLU nonlinearities has a multilinear structure. Specifically, we can find the loss is a piece-wise multilinear form. Base on this observation, we are now interested in the behavior of the weights that jumps between the pieces during optimization.
