@@ -126,7 +126,7 @@ tasks. However, there is less theory to give the guarantee for both the optimiza
 \section{The deeper the lower training loss}
 
 Residual Networks \cite{he2016deep,he2016identity}, which introduced a identity mapping based shortcut, is a class of deep neural networks and provide state-of-the-art performance both in image classification\cite{he2016deep,he2016identity}, image reconstruction\cite{he2016deep}, deep reinforcement learning\cite{silver2017mastering} and etc. ResNets allow the training of each layer only needs to focus on fitting just the residual of the previous layer’s output and the target output. \cite{2018arXiv180406739S} proves that for all deep residual, networks' local minimum is smaller than a linear predictor's global minimum. It shows that the trained network is no worse than what we can obtain if we remove the
-residual layers and train a shallower network instead. In this section, we extend the result in \cite{2018arXiv180406739S} which shows that for a two layer neural network, there is also a similar statement holds, \emph{i.e.}, a learned two layer residual network is better than a one layer network. To describe the result formally, we first introduce some notation and definitions.
+residual layers and train a shallower network instead. In this section, we extend the result in \cite{2018arXiv180406739S} which shows that for a two-layer neural network, there is also a similar statement holds, \emph{i.e.}, a learned two-layer residual network is better than a one-layer network. To describe the result formally, we first introduce some notation and definitions.
 
 \begin{defn}[loss function]
     $\ell(\cdot;\cdot)$ takes two scalars as input. We assume $\ell(p;y)=(p-y)^2$.
@@ -262,13 +262,14 @@ c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\rig
 
 
 \subsection{A counter example}
-In this section, we give an simple example that shows the critical point of two layer network do not have to be better than one layer network's global minimum. So in a sense, our result cannot be improved.
+In this section, we give an simple example that shows the critical point of two-layer network does not have to be better 
+than one-layer network's global minimum. So in a sense, our result cannot be improved.
 
 \begin{table}[H]
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \begin{tabular}{|c|c|}
-\hline $x^\mathrm{T}$&$y$\\
+\hline $\mathbf x^\mathrm{T}$&$y$\\
 \hline $(1,1)$&1\\
 \hline
 \end{tabular}
@@ -276,13 +277,14 @@ In this section, we give an simple example that shows the critical point of two 
 \begin{minipage}[t]{0.5\linewidth}
 \centering
 \begin{tabular}{|c|c|c|c|c|}
-\hline $V_1$&$f_1$&$V_2$&$f_2$&$w$\\
-\hline $-I_{2*2}$&Identity&Arbitrary&Polished ReLU&Arbitrary\\
+\hline $\mathbf V_1$&$f_1$&$\mathbf V_2$&$f_2$&$\mathbf w$\\
+\hline $-I_{2\times 2}$&Identity&Arbitrary&Polished ReLU&Arbitrary\\
 \hline
 \end{tabular}
 \end{minipage}
 \\
-\caption{Counter example: The network structure is the two layer ResNet we discuss with activation function "polished ReLU" which is based on ReLU but smooth at 0's neighbor and has derivative 0 at 0. Then the weight above is a critical point of two layer network . But it is obviously poorer than one layer network's global minimum with weight $V_1=0, w=(1,0)$.}
+\caption{Counter example: The network structure is the two-layer ResNet with activation function "polished ReLU",
+which is based on ReLU but smooth in 0's neighborhood and has derivative 0 at 0. Then the weight above is a critical point of two-layer network . But it is obviously poorer than one-layer network's global minimum with weight $\mathbf V_1=\mathbf 0, \mathbf w=(1,0)$.}
 \end{table}
 
 
@@ -305,34 +307,36 @@ Figure \ref{saas} shows that the loss of dataset labeled with ground truth drops
 
 Inspired by the magic number $\log 10$, in this section we give a counter example that there exists a weight, which is a first order condition but not a global minimum for random guess label.
 
-In this section, we use the $\ell_2$ loss as the loss function between the target label and the network output. That is to say our objective function is designed as $\argmin_w\mathbb{E}_{(x,y)\sim Dataset}\left\|f_w(x)-y\right\|_2^2$. %If the dataset is generated via two independent random variable $x,y$ and $P(y=1)=P(y=-1)=1/2$, then $f_w(x)=0$ for all $x$ is a point that satisfies the first order condition.
+In this section, we use the $\ell_2$ loss as the loss function between the target label and the network output. That is to say our objective function is designed as $\argmin_w\mathbb{E}_{(\mathbf x,y)\sim Dataset}\left\|f_w(\mathbf x)-y\right\|_2^2$. %If the dataset is generated via two independent random variable $x,y$ and $P(y=1)=P(y=-1)=1/2$, then $f_w(x)=0$ for all $x$ is a point that satisfies the first order condition.
 
 \begin{table}[H]
 \begin{minipage}[t]{0.4\linewidth}
 \flushright
 \begin{tabular}{|c|c|c|}
-\hline $x^\mathrm{T}$&$y$&$y'$\\
-\hline $(0,0,0)$&0&0\\
-\hline $(0,0,1)$&1&0\\
-\hline $(0,1,0)$&1&0\\
-\hline $(0,1,1)$&1&0\\
-\hline $(1,0,0)$&0&1\\
-\hline $(1,0,1)$&0&1\\
-\hline $(1,1,0)$&1&1\\
-\hline $(1,1,1)$&0&1\\
+\hline $\mathbf x^\mathrm{T}$&$y$&$y'$\\
+\hline $(0,0,0)$&$0$&$0$\\
+\hline $(0,0,1)$&$1$&$0$\\
+\hline $(0,1,0)$&$1$&$0$\\
+\hline $(0,1,1)$&$1$&$0$\\
+\hline $(1,0,0)$&$0$&$1$\\
+\hline $(1,0,1)$&$0$&$1$\\
+\hline $(1,1,0)$&$1$&$1$\\
+\hline $(1,1,1)$&$0$&$1$\\
 \hline
 \end{tabular}
 \end{minipage}
 \begin{minipage}[t]{0.5\linewidth}
 \centering
 \begin{tabular}{|c|c|}
-\hline $W_1$&$W_2$\\
-\hline (-2,1,0)&1\\
+\hline $\mathbf W_1$&$\mathbf W_2$\\
+\hline $(-2,1,0)$&$1$\\
 \hline
 \end{tabular}
 \end{minipage}
 \\
-\caption{Counter example: The network structure is simple two layer feedforward neural network with activation function "polished ReLU" which is based on ReLU but smooth at 0's neighbor and has derivative 0 at 0. Specifically, the network works as: $f_w(x)=W_2\sigma(W_1 x)$. Then for data $(x,y)$ whose label is randomly drawn, the weights $W_1, W_2$ reach a point that satisfies the first order condition, yet it is not a global minimum (when $W_1'=(-2,1,1), W_2'=1$, the loss is less than the example) . Meanwhile $W_1, W_2$ is not a critical point for data $(x,y')$ whose label obviously depends on $x$ (indeed coincide with the first coordinate of $x$) which means the optimization will not stuck at the $W_1, W_2$ above for dependent data.}
+\caption{Counter example: The network structure is simple two-layer feedforward neural network with activation function "polished ReLU" which is based on ReLU but smooth in $0$'s neighborhood and has derivative $0$ at $0$. Specifically, the network works as: 
+    $f_w(\mathbf x)=\mathbf W_2\sigma(\mathbf W_1 \mathbf x)$. 
+    Then for data $(\mathbf x,y)$ whose label is randomly drawn, the weights $\mathbf W_1, \mathbf W_2$ reach a point that satisfies the first order condition, yet it is not a global minimum (when $\mathbf W_1'=(-2,1,1), \mathbf W_2'=1$, the loss is less than the example) . Meanwhile $\mathbf W_1, \mathbf W_2$ is not a critical point for data $(\mathbf x,y')$ whose label obviously depends on $\mathbf x$ (indeed coincide with the first coordinate of $\mathbf x$) which means the optimization will not stuck at the $\mathbf W_1, \mathbf W_2$ above for dependent data.}
 \end{table}
 
 %\textbf{it seem that this construction is independent of the network structure. It only needs there exist a weight to let the network output is all 0.}
@@ -369,13 +373,13 @@ In the next section, we discuss the sufficiency of the cooperation of the data t
 \subsection{Vanilla feedforward neural networks}
 Consider the loss function of a vanilla feed forward neural network,
 
-$$f(W_1,\cdots,W_n)=\left\|W_n\sigma (W_{n-1}\sigma(W_{n-2}\cdots\sigma(W_1x)))-y\right\|_2^2.$$
+$$f(\mathbf W_1,\cdots,\mathbf W_n)=\norm{\mathbf W_n\sigma (\mathbf W_{n-1}\sigma(\mathbf W_{n-2}\cdots\sigma(\mathbf W_1\mathbf x)))-y}_2^2.$$
 
-Here $x$ is the input data and $y$ is the associated label. $W_i$ is the weight of the $i$-th label and $\sigma$ is the activation function.
+Here $x$ is the input data and $y$ is the associated label. $\mathbf W_i$ is the weight of the $i$-th label and $\sigma$ is the activation function.
 
 
 $$
-\frac{\partial f}{\partial W_i}=\hat\sigma((W_n\sigma (W_{n-1}\sigma(W_{n-2}\cdots\sigma(W_1x)))-y)W_n^\mathrm{T})\cdots
+\frac{\partial f}{\partial \mathbf W_i}=\hat\sigma((\mathbf W_n\sigma (\mathbf W_{n-1}\sigma(\mathbf W_{n-2}\cdots\sigma(\mathbf W_1\mathbf x)))-y)\mathbf W_n^\mathrm{T})\cdots
 $$
 
 \textbf{check it!}
@@ -383,7 +387,7 @@ $$
 Can we give some assumption that leads to for some $i$
 
 $$
-\frac{\partial f}{\partial W_i} \ge c|(W_n\sigma (W_{n-1}\sigma(W_{n-2}\cdots\sigma(W_1x)))-y|
+\frac{\partial f}{\partial \mathbf W_i} \ge c|(\mathbf W_n\sigma (\mathbf W_{n-1}\sigma(\mathbf W_{n-2}\cdots\sigma(\mathbf W_1\mathbf x)))-y|
 $$
 
 \subsection{Deep Residual Networks}
@@ -470,7 +474,7 @@ We did some experiments and counted the times of "jump", \emph{i.e.}, the activa
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=2.5in]{PieceJump.jpg}
-	\caption{Jump times of ReLU (from 0 to positive) per epoch. We use LeNet and test on Cifar10 database.}
+	\caption{Jump times of ReLU (from $0$ to positive) per epoch. We use LeNet and test on Cifar10 database.}
 	\label{piecejump}
 \end{figure}
 
