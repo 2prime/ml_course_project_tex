@@ -129,7 +129,7 @@ Residual Networks \cite{he2016deep,he2016identity}, which introduced a identity 
 residual layers and train a shallower network instead. In this section, we extend the result in \cite{2018arXiv180406739S} which shows that for a two-layer neural network, there is also a similar statement holds, \emph{i.e.}, a learned two-layer residual network is better than a one-layer network. To describe the result formally, we first introduce some notation and definitions.
 
 \begin{defn}[loss function]
-    $\ell(\cdot;\cdot)$ takes two scalars as input. We assume $\ell(p;y)=(p-y)^2$.
+    $\ell(\cdot;\cdot)$ takes two scalars as input. In this section, we assume $\ell(p;y)=(p-y)^2$.
 \end{defn}
 
 \begin{defn}[loss of two-layer ResNet]
@@ -141,7 +141,7 @@ residual layers and train a shallower network instead. In this section, we exten
 	\[F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2):=\mathbb{E}_{\mathbf{x},y}L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\]
 \end{defn}
 
-\begin{defn}[loss of one-layer Resnet]
+\begin{defn}[loss of one-layer ResNet]
 	\begin{align*}
         L_1(\mathbf{w},\mathbf{V}_1;\mathbf{x},y)&:=L_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{0};\mathbf{x},y)=\ell\left(\mathbf{w}^\mathrm{T}(\mathbf{x}+\mathbf{V}_1f_1(\mathbf{x}));y\right)\\
 	F_1(\mathbf{w},\mathbf{V}_1)&:=\mathbb{E}_{\mathbf{x},y}L_1(\mathbf{w},\mathbf{V}_1;\mathbf{x},y)=F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{0})
@@ -197,7 +197,7 @@ residual layers and train a shallower network instead. In this section, we exten
 	\end{align*}
 	The first inequality uses the convexity of $\ell(\cdot;\cdot)$ in its first argument.
 
-    Since $\ell(p;y)=(p-y)^2$, we have $d\ell(p;y)=2(p-y)$. And take expectation over $\mathbf{x}$ and $y$ on both sides yields
+    Since $\ell(p;y)=(p-y)^2$, we have $d\ell(p;y)=2(p-y)$. Taking expectation over $\mathbf{x}$ and $y$ on both sides yields
     \begin{align*}
     &\iprod{\text{vec}(\mathbf{G})}
         {\text{vec}\left(\nabla F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)\right)}\\
@@ -261,8 +261,8 @@ c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\rig
 \end{proof}
 
 
-\subsection{A counter example}
-In this section, we give an simple example that shows the critical point of two-layer network does not have to be better 
+\subsection{A counterexample}
+In this section, we give a simple example that shows the critical point of two-layer network does not have to be better 
 than one-layer network's global minimum. So in a sense, our result cannot be improved.
 
 \begin{table}[H]
@@ -283,7 +283,7 @@ than one-layer network's global minimum. So in a sense, our result cannot be imp
 \end{tabular}
 \end{minipage}
 \\
-\caption{Counter example: The network structure is the two-layer ResNet with activation function "polished ReLU",
+\caption{Counterexample: The network structure is the two-layer ResNet with activation function "polished ReLU",
 which is based on ReLU but smooth in 0's neighborhood and has derivative 0 at 0. Then the weight above is a critical point of two-layer network . But it is obviously poorer than one-layer network's global minimum with weight $\mathbf V_1=\mathbf 0, \mathbf w=(1,0)$.}
 \end{table}
 
@@ -296,18 +296,18 @@ which is based on ReLU but smooth in 0's neighborhood and has derivative 0 at 0.
 	\centering
 	\includegraphics[width=2.5in]{cifar.jpeg}
 	\includegraphics[width=2.5in]{mnist.jpg}
-	\caption{Comparison of training the neural network to fit the given label and fit a random labeled dataset using \textbf{gradient descent}. Left hand side is the figure for DenseNet101 training on CIFAR10 dataset and right hand side the one for LeNet5 training on MNIST. It seems that there exists a saddle point around $\log 10$. \textbf{All the loss we evaluate after the last layer is the cross-entropy loss.}}
+	\caption{Comparison of training the neural network to fit the given label and fit a random labeled dataset using \textbf{gradient descent}. Left hand side is the figure for DenseNet121 training on CIFAR10 dataset and right hand side the one for LeNet5 training on MNIST. It seems that there exists a saddle point around $\log 10$. \textbf{All the loss we evaluate after the last layer is the cross-entropy loss.}}
 	\label{saas}
 \end{figure}
 
 Figure \ref{saas} shows that the loss of dataset labeled with ground truth drops quickly to zero even when we use the gradient descent algorithm without any noise, which implies that the loss surface in this case is pretty good. However, if we label the data with random choices, the learning curve changes a lot. The loss first quickly drops to a place around $\log 10$ and stops here for a long time. Once the loss leaves $\log 10$, the loss drops faster. This phenomenon suggests that the learning process was going through a saddle point. Repeating the experiment several times, we find that $\log10$ seems a magic number, that all training process starting from a random initialization hits a saddle point near $\log 10$. As the loss function for the last layer output we denote in the experiment is the cross-entropy loss, $\log 10$ is the place where we give a random guess.
 
 
-\subsection{A Counter Example}
+\subsection{A counterexample}
 
-Inspired by the magic number $\log 10$, in this section we give a counter example that there exists a weight, which is a first order condition but not a global minimum for random guess label.
+Inspired by the magic number $\log 10$, we give a counterexample that there exists a weight, which satisfies first order condition but is not a global minimum for some bad label.
 
-In this section, we use the $\ell_2$ loss as the loss function between the target label and the network output. That is to say our objective function is designed as $\argmin_w\mathbb{E}_{(\mathbf x,y)\sim Dataset}\left\|f_w(\mathbf x)-y\right\|_2^2$. %If the dataset is generated via two independent random variable $x,y$ and $P(y=1)=P(y=-1)=1/2$, then $f_w(x)=0$ for all $x$ is a point that satisfies the first order condition.
+In this subsection, we also use the squared $\ell_2$ loss as the loss function between the target label and the network output. That is to say our objective function is designed as $\mathbb{E}_{(\mathbf x,y)\sim Dataset}\norm{f_w(\mathbf x)-y}_2^2$. When the output is a scalar, the objective function can also be written as $\mathbb{E}_{(\mathbf x,y)\sim\text{Dataset}}(f_w(\mathbf x)-y)^2$. The counterexample is constructed in the following table.%If the dataset is generated via two independent random variable $x,y$ and $P(y=1)=P(y=-1)=1/2$, then $f_w(x)=0$ for all $x$ is a point that satisfies the first order condition.
 
 \begin{table}[H]
 \begin{minipage}[t]{0.4\linewidth}
@@ -334,7 +334,7 @@ In this section, we use the $\ell_2$ loss as the loss function between the targe
 \end{tabular}
 \end{minipage}
 \\
-\caption{Counter example: The network structure is simple two-layer feedforward neural network with activation function "polished ReLU" which is based on ReLU but smooth in $0$'s neighborhood and has derivative $0$ at $0$. Specifically, the network works as: 
+\caption{Counterexample: The network structure is simple two-layer feedforward neural network with activation function "polished ReLU" which is based on ReLU but smooth in $0$'s neighborhood and has derivative $0$ at $0$. Specifically, the network works as: 
     $f_w(\mathbf x)=\mathbf W_2\sigma(\mathbf W_1 \mathbf x)$. 
     Then for data $(\mathbf x,y)$ whose label is randomly drawn, the weights $\mathbf W_1, \mathbf W_2$ reach a point that satisfies the first order condition, yet it is not a global minimum (when $\mathbf W_1'=(-2,1,1), \mathbf W_2'=1$, the loss is less than the example) . Meanwhile $\mathbf W_1, \mathbf W_2$ is not a critical point for data $(\mathbf x,y')$ whose label obviously depends on $\mathbf x$ (indeed coincide with the first coordinate of $\mathbf x$) which means the optimization will not stuck at the $\mathbf W_1, \mathbf W_2$ above for dependent data.}
 \end{table}
@@ -354,7 +354,7 @@ In this section, we use the $\ell_2$ loss as the loss function between the targe
 
 \subsection{Data Doesn't Matter}
 
-The success of convolution operator in neural networks is contributes to "the feature of an image depends on the local relationship in an image" and "convolution operator is invariant to translation" in common sense. However, our experiment shows that these factors may not contribute to a nice loss surface. In order to break the translation invariance and local relationship, we randomly permute the pixels in an image and doesn't change the given label. The learning curve is demonstrated in Figure \ref{randomperb}.
+The success of convolution operator in neural networks is attributed to "the feature of an image depends on the local relationship of pixels in an image" and "convolution operator is invariant to translation" in common sense. However, our experiment shows that these factors may not contribute to a nice loss surface. In order to break the translation invariance and local relationship, we randomly permute the pixels in an image and doesn't change the given label. The learning curve is plotted in Figure \ref{randomperb}.
 
 \begin{figure}[htp]
 	\centering
