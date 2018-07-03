@@ -222,28 +222,28 @@ residual layers and train a shallower network instead. In this section, we exten
 \end{proof}
 
 \begin{prop}
-Let $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ be a critical point of the two-layer ResNet. 
+Let $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ be a critical point of the two-layer ResNet.
 Assume $\mathbf{w}\neq\mathbf{0}$ and
-for any $\mathbf{x}$, $\norm{f_1(\mathbf{x})}_\infty<\frac c 2$. Then for any $\mathbf{w}^*,\mathbf{V}_1^*$, 
+for any $\mathbf{x}$, $\norm{f_1(\mathbf{x})}_\infty<\frac c 2$. Then for any $\mathbf{w}^*,\mathbf{V}_1^*$,
 \[
 \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)}\leq
-c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1 
+c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
     +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{w},y)}.
 \]
 \end{prop}
 
 \begin{proof}
-Since $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ is the critical point, 
+Since $\mathbf{w},\mathbf{V}_1,\mathbf{V}_2,\theta$ is the critical point,
 $\nabla F_{2,\theta}(\mathbf{w}^*,\mathbf{V}_1^*,\mathbf{V}_2^*;\mathbf{x},y)=\mathbf{0}$.
 
-Plugging into (\ref{lemma1}), we have 
+Plugging into (\ref{lemma1}), we have
 \[
     F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)
     -c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
     \sqrt{F_{2,\theta}(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y)}-F_1\left(\mathbf{w}^*,\mathbf{V}_1^*;
     \mathbf{x},y\right)\leq 0.
 \]
-Simple calculation shows 
+Simple calculation shows
 \[
     \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)}\leq
     \frac{
@@ -255,10 +255,36 @@ Simple calculation shows
 For $\sqrt{A+B}\leq\sqrt{A}+\sqrt{B}$, we have
 \[
     \sqrt{F_{2,\theta}\left(\mathbf{w},\mathbf{V}_1,\mathbf{V}_2;\mathbf{x},y\right)}\leq
-c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1 
+c\norm{\left(\mathbf{w}^*\right)^\mathrm{T}\left(\mathbf{V}_1-\mathbf{V}_1^*\right)}_1
     +\sqrt{F_1(\mathbf{w}^*,\mathbf{V}_1^*;\mathbf{w},y)}.
 \]
 \end{proof}
+
+
+\subsection{A counter example}
+In this section, we give an simple example that shows the critical point of two layer network do not have to be better than one layer network's global minimum. So in a sense, our result cannot be improved.
+
+\begin{table}[H]
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\begin{tabular}{|c|c|}
+\hline $x^\mathrm{T}$&$y$\\
+\hline $(1,1)$&1\\
+\hline
+\end{tabular}
+\end{minipage}
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline $V_1$&$f_1$&$V_2$&$f_2$&$w$\\
+\hline $-I_{2*2}$&Identity&Arbitrary&Polished ReLU&Arbitrary\\
+\hline
+\end{tabular}
+\end{minipage}
+\\
+\caption{Counter example: The network structure is the two layer ResNet we discuss with activation function "polished ReLU" which is based on ReLU but smooth at 0's neighbor and has derivative 0 at 0. Then the weight above is a critical point of two layer network . But it is obviously poorer than one layer network's global minimum with weight $V_1=0, w=(1,0)$.}
+\end{table}
+
 
 \section{Better target function leads to better loss surface}
 
@@ -386,8 +412,8 @@ Previous works have tried to find sufficient conditions for optimal control and 
 
 This means for a given weight of the last layer, the loss surface seems good. The first order condition (PMP) can imply an optimal control, which is also been proved in \cite{bartlett2018representing} in discrete sense.
 
-There is another type of conditions utilizing the definition of value function 
-$$V(s,y)=\inf_{u\in\mathbf{U_{s,y}}}\psi(T,x(T,u,s,y)),$$ 
+There is another type of conditions utilizing the definition of value function
+$$V(s,y)=\inf_{u\in\mathbf{U_{s,y}}}\psi(T,x(T,u,s,y)),$$
 where $\mathbf{U_{s,y}}$ denotes all the trajectory satisfies $x(s)=y$. The value function satisfies the Hamilton-Jacobi equation $$\partial_sV(s,y)+\inf_{\omega\in\mathbf{U}}\left\{\nabla_yV(s,y)\cdot f(s,y,\omega)\right\}=0.$$
 \subsection{Experiments}
 
@@ -438,7 +464,7 @@ In our paper, we claim that all the data should cooperate in order to get a good
 \subsection{Combine Generalization}
 
 \subsection{Loss surface near the converge point}
-\cite{DBLP:journals/corr/abs-1712-10132} shows the loss surface of neural networks equipped with a hinge loss criterion and ReLU or leaky ReLU nonlinearities has a multilinear structure. Specifically, we can find the loss is a piece-wise multilinear form. Base on this observation, we are now interested in the behavior of the weights that jumps between the pieces during optimization. 
+\cite{DBLP:journals/corr/abs-1712-10132} shows the loss surface of neural networks equipped with a hinge loss criterion and ReLU or leaky ReLU nonlinearities has a multilinear structure. Specifically, we can find the loss is a piece-wise multilinear form. Base on this observation, we are now interested in the behavior of the weights that jumps between the pieces during optimization.
 We did some experiments and counted the times of "jump", \emph{i.e.}, the activation function ReLU's value goes to different linear part during the optimization. We also found that the jump times increase as the optimization goes on. At the same time the jump times seems converge, which may indicate that the optimization leads to an area at the edge of many pieces of the loss surface. This also makes us rethink what we get from optimization.
 
 \begin{figure}[H]
