@@ -369,6 +369,15 @@ In our paper, we claim that all the data should cooperate in order to get a good
 
 \subsection{Combine Generalization}
 
+\subsection{Loss surface near the converge point}
+\cite{DBLP:journals/corr/abs-1712-10132} shows the loss surface of neural networks equipped with a hinge loss criterion and ReLU or leaky ReLU nonlinearities has a multilinear structure. Specifically, we can find the loss is a piecewise multilinear form. Base on this observation, we are now interested in the behavior of the weights that jumps between the pieces during optimization. We do some experience and count the times of "jump" (the activation function ReLU's value gotten from different linear part) during the optimization and found that the times increase as the optimization going on. At the same time the jump times seems converge, which may indicate that the optimization lead to a area at the edge of many pieces of the loss surface. This also makes us rethink what we get from optimization.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=2.5in]{PieceJump.jpg}
+	\caption{Times of activation state change of ReLU(from 0 to positive) per epoch. We use Lenet and test on Cifar10 database.}
+	\label{piecejump}
+\end{figure}
 
 \bibliographystyle{plain}
 \bibliography{provably}
